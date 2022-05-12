@@ -2,10 +2,10 @@
   "name": "blablafood",
   "version": "1.0.0",
   "description": "A webapp to share food and moments",
-  "main": "index.js",
+  "main": "app/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "run": "node -r dotenv/config index.js"
+    "start": "node -r dotenv/config app/index.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,7 @@
   "dependencies": {
     "dotenv": "^16.0.0",
     "express": "^4.18.1",
-    "mongoose": "^6.3.2"
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.3.3"
   }
 }
