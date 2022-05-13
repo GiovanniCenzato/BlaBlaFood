@@ -4,9 +4,9 @@ var Schema = mongoose.Schema;
 module.exports = mongoose.model('Announcement', new Schema({ 
 	title: String,
     description: String,
-    tags: Array,
-    authorId: ObjectId,
-    reservations: Array,
-    maxReservations: Int,
-    queuedReservations: Array
+    tags: [],
+    authorId: Schema.Types.ObjectId,
+    reservations: [],
+    maxReservations: Number,
+    queuedReservations: []
 }));
