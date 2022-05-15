@@ -2,10 +2,10 @@
   "name": "blablafood",
   "version": "1.0.0",
   "description": "A webapp to share food and moments",
-  "main": "app/index.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node -r dotenv/config app/index.js"
+    "start": "node -r dotenv/config index.js"
   },
   "repository": {
     "type": "git",
