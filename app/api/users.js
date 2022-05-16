@@ -7,7 +7,6 @@ const User = require('../models/user')
  */
 router.post('', async (req, res) => {
     // check if user with the same username 
-    // TBI
 
     // set new user's data
     let newUser = new User({
@@ -19,7 +18,7 @@ router.post('', async (req, res) => {
     })
 
     try {
-        newUser = newUser.save()
+        newUser = await newUser.save()
         console.log(`New user ${req.body.username} successfully saved!`);
     } catch {
         console.log(`Error trying to save ${req.body.username} to database.`);
@@ -43,6 +42,7 @@ router.post('', async (req, res) => {
         if (users.length == 0) {
             console.log(`No user found in database!`);
             res.status(404).send(`No user found in database!`);
+            return;
         }
 
         let usersList = users.map( (key, user) => {
