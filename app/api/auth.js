@@ -14,7 +14,7 @@ router.post('/login', async (req, res) => {
         });
 
         // check password TODO: implement hashing
-        if (user.password != req.body.password) {
+        if (user.comparePassword(user.password, req.body.password)) {
             console.log('Login failed: wrong password');
             return res.status(401).json({
                 message: 'Login failed, invalid user or password.'
