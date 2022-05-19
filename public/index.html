@@ -9,6 +9,8 @@
         <title>BlaBlaFood</title>
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     </head>
     <body>
         <!-- Responsive navbar-->
@@ -45,24 +47,34 @@
                 </div>
                 <div class="col">
                     <div class="overflow-auto max-width h-100">
-                        <div class="col">
+                        <div id="contenitore-annunci" class="col">
                             <div class="card h-100 w-100 mb-2">
                                 <div class="card-body">
                                     <table cellpadding ="8">
-                                        <tr><td rowspan="2"><img class="card-img-top" src="https://termoidraulicabassini.it/wp-content/uploads/2015/12/utente.png" alt="Card image" style="width:60px;height:60px;"></td>
+                                        <img class="card-img-top" src="https://termoidraulicabassini.it/wp-content/uploads/2015/12/utente.png" alt="Card image" style="width:60px;height:60px;"></td>
                                         <td><h2 class="card-title">Mario Rossi</h2></td> <td><h4>4 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWeQlIXch2fjexAFofyEt1CtkQEW0tPpqwpA&usqp=CAU" alt="Stella" style="width:25px;height:25px;"></h4></td></tr> 
                                         <tr><td colspan="2"><p class="card-text">Gnocchi al ragù</p></td></tr>
                                     </table>                                   
                                 </div>
                                 <div class="card-footer"></div>
                             </div>
+
                             <div class="card h-100 w-100 mb-2">
                                 <div class="card-body">
-                                    <h2 class="card-title">Sofia Scamponi</h2>
-                                    <p class="card-text">Pollo al curry</p>
+                                    <table cellpadding="8">
+                                    <tr><td><h2 class="card-title">Sofia Scamponi</h2></td>
+                                    <td><h4>4 stelle</h4></td></tr>
+                                    </table>
+                                    <p class="card-subtitle" style="float: right;">tags: non veg</p>
+                                    <p class="card-subtitle"><b>Pollo al curry</b></p>
+                                    <p class="card-text">Buonissimo gnam gnam che bontà!</p>
                                 </div>
-                                <div class="card-footer"></div>
+                                <div class="card-footer">
+                                    <a href="#" class="btn btn-primary">Prenota</a>
+                                    <p class="card-subtitle" style="float: right;">Posti già prenotati: 3/4</p>
+                                </div>
                             </div>
+
                             <div class="card h-100 w-100 mb-2">
                                 <div class="card-body">
                                     <h2 class="card-title">Roberto Sandri</h2>
@@ -82,7 +94,45 @@
                 </div>
             </div>
         </div>
-        <!-- Bootstrap core JS-->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+        <script>
+            // script to fetch announcements from backend
+            function loadAnnouncementsList(){
+                fetch('localhost:3000/api/v1/announcements/')
+                .then( res => {
+                    if (!res.ok) {
+                        console.log('Error fetching');
+                    }
+                    return res.json();
+                })
+                .then( _json => {
+                    $.each(_json, function(index, item){
+                        $("#contenitore-annunci").append(`<div class="card h-100 w-100 mb-2">
+                                <div class="card-body">
+                                    <table cellpadding="8">
+                                    <tr><td><h2 class="card-title">${item.title}</h2></td>
+                                    <td><h4>4 stelle</h4></td></tr>
+                                    </table>
+                                    <p class="card-subtitle" style="float: right;">tags: ${item.tags[1]}</p>
+                                    <p class="card-subtitle"><b>${item.tags[0]}</b></p>
+                                    <p class="card-text">${item.description}</p>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="#" class="btn btn-primary">Prenota</a>
+                                    <p class="card-subtitle" style="float: right;">Posti già prenotati: ${item.queuedReservations.length}/${item.maxReservations}</p>
+                                </div>
+                            </div>`);
+                    });
+                } )
+                .catch( err => {
+                    console.log("Error occurred: " + err);
+                });
+            }
+
+            $(document).ready(function(){
+                loadAnnouncementsList();
+            });
+        </script>
     </body>
 </html>
