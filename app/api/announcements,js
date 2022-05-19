@@ -1,6 +1,84 @@
 const express = require('express');
 const router = express.Router();
 const Announcement = require('../models/announcement.js');
+const User = require('../models/user.js');
 
+/**
+ * Create a new announcement
+ */
+router.post('', async (req, res) => {
+    // set new announcement's data
+    let newAnn = new Announcement({
+        title: req.body.title,
+        description: req.body.description,
+        tags: req.body.tags,
+        authorId: req.body.authorId,
+        reservations: [],
+        maxReservations: req.body.maxReservations,
+        queuedReservations: []
+    })
+
+    try {
+        newAnn = await newAnn.save()
+        console.log(`New announcement ${req.body.title} successfully saved!`);
+    } catch {
+        console.log(`Error trying to save ${req.body.title} to database.`);
+    }
+
+    // return response
+    res.status(201).send(`New announcement ${req.body.title} successfully saved!`);
+    
+})
+
+/**
+ * Retrieve all announcements
+ */
+ router.get('', async (req, res) => {
+     
+    try {
+        // get announcements from database
+        let announcements = await Announcement.find({})
+        
+        // if there are no announcements in the database
+        if (announcements.length == 0) {
+            console.log(`No announcement found in database!`);
+            res.status(404).send(`No announcement found in database!`);
+            return;
+        }
+
+        console.log(announcements);
+        let announcementsList = await Promise.all(announcements.map( async (ann) => {
+            try {
+                // get author info to display on announcement
+                let user = await User.findOne({
+                    _id: ann.authorId
+                });
+                
+                return {
+                    title: ann.title,
+                    description: ann.description,
+                    tags: ann.tags,
+                    maxReservations: ann.maxReservations,
+                    reservations: ann.reservations,
+                    queuedReservations: ann.queuedReservations, // needed?
+                    author: user
+                };
+
+
+            } catch (e) {
+                console.log(`Error: ${e} retrieving user`);
+                return;
+            }
+
+        }));
+        
+        res.status(200).json(announcementsList);
+
+        // return response
+    } catch {
+        console.log(`Error trying to retrieve announcements from database.`);
+        res.status(404).send(`No announcement found in database!`);
+    }
+})
 
 module.exports = router;
