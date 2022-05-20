@@ -27,7 +27,7 @@
             <div class="card col-6 mt-5 ml-5">
                 <div class="card-body p-4 p-md-5">
                     <h3 class="mb-4 pb-2 pb-md-0 mb-md-5">Registrazione</h3>
-                    <form>
+                    <form method="POST" action="localhost:3000/api/v1/users">
                         <div class="row">
                             <div class="col-md-6 mb-4"> 
                                 <div class="form-outline">
@@ -82,7 +82,7 @@
                             </div>
                             <div class="col-md-6 mb-4 d-flex align-items-center">
                                 <div class="form-outline w-100">
-                                    <input type="text" class="form-control form-control-lg" id="email2" name="email2" onblur="confirmMail()" placeholder="mdo@example.com"/>
+                                    <input type="text" class="form-control form-control-lg" id="email2" onblur="confirmMail()" placeholder="mdo@example.com"/>
                                     <label for="email2" class="form-label">Conferma Email</label>
                                 </div>   
                             </div>
@@ -97,7 +97,7 @@
                             </div>
                             <div class="col-md-6 mb-4">
                                 <div class="form-outline">
-                                    <input type="text" id="password2" class="form-control form-control-lg" name="password2" onblur="confirmPass()" placeholder="password"/>
+                                    <input type="text" id="password2" class="form-control form-control-lg" onblur="confirmPass()" placeholder="password"/>
                                     <label class="form-label" for="password2">Conferma password</label>
                                 </div>
                             </div>
@@ -124,7 +124,7 @@
             <div class="card col mt-5 mx-5 h-50">
                 <div class="card-body  p-md-5">
                     <h3 class="mb-4 pb-2 pb-md-0 mb-md-5">Login</h3>
-                    <form>
+                    <form method="POST" action="localhost:3000/api/v1/auth">
                     <div class="row">
                         <div class="form-outline">
                             <input type="text" id="email-login" class="form-control form-control-lg w-100" name="email-login" placeholder="mdo@example.com"/>
@@ -176,4 +176,3 @@
         </body>
     </body>
 </html>
-
