@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+// const bcrypt = require('bcrypt');
 var Schema = mongoose.Schema;
 
 // set up a mongoose model
@@ -10,6 +10,10 @@ var schema = new Schema({
     password: String,
     home: String
 });
+
+schema.methods.comparePasswords = (psw1, psw2) => {
+    return psw1==psw2;
+};
 
 
 module.exports = mongoose.model('User', schema);

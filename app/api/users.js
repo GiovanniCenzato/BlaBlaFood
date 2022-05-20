@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user')
+const tokenCheck = require('./tokenChecker');
 
-router.get('/me', async (req, res) => {
+router.get('/me', tokenCheck, async (req, res, next) => {
     // check for token 
     if (!req.loggedin) {
         return res.status(403).json({
@@ -20,6 +21,42 @@ router.get('/me', async (req, res) => {
         message: 'User retrieved correctly',
         user: _user
     });
+})
+
+/**
+ * Retrieve all users
+ */
+ router.get('', async (req, res) => {
+     
+    try {
+        // get users from database
+        let users = await User.find({})
+        
+        // if there are no users in the database
+        if (users.length == 0) {
+            console.log(`No user found in database!`);
+            res.status(404).send(`No user found in database!`);
+            return;
+        }
+
+        let usersList = users.map( (user) => {
+            return {
+                id: user._id,
+                name: user.name,
+                username: user.username,
+                email: user.email,
+                password: user.password,
+                home: user.home,
+            }
+        })
+
+
+        // return response
+        res.status(200).json(usersList);
+    } catch {
+        console.log(`Error trying to retrieve users from database.`);
+        res.status(404).send(`No user found in database!`);
+    }
 })
 
 module.exports = router;

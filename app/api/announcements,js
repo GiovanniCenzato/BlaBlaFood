@@ -1,6 +1,0 @@
-const express = require('express');
-const router = express.Router();
-const Announcement = require('../models/announcement.js');
-
-
-module.exports = router;
