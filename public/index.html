@@ -24,7 +24,7 @@
                             <a class="nav-link" href="#">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Crea annuncio</a>
+                            <a class="nav-link" href="announcement.html">Crea annuncio</a>
                           </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Accesso</a>
@@ -99,7 +99,7 @@
         <script>
             // script to fetch announcements from backend
             function loadAnnouncementsList(){
-                fetch('localhost:3000/api/v1/announcements/')
+                fetch('http://localhost:3000/api/v1/announcements/')
                 .then( res => {
                     if (!res.ok) {
                         console.log('Error fetching');
