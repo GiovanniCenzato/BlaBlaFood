@@ -45,8 +45,9 @@ router.post('', async (req, res) => {
             return;
         }
 
-        let usersList = users.map( (key, user) => {
+        let usersList = users.map( (user) => {
             return {
+                id: user._id,
                 name: user.name,
                 username: user.username,
                 email: user.email,
@@ -54,6 +55,8 @@ router.post('', async (req, res) => {
                 home: user.home,
             }
         })
+
+        console.log(usersList);
 
         // return response
         res.status(200).json(usersList);
