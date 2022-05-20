@@ -16,7 +16,7 @@ router.post('', async (req, res) => {
         reservations: [],
         maxReservations: req.body.maxReservations,
         queuedReservations: []
-    })
+    });
 
     try {
         newAnn = await newAnn.save()
@@ -46,7 +46,6 @@ router.post('', async (req, res) => {
             return;
         }
 
-        console.log(announcements);
         let announcementsList = await Promise.all(announcements.map( async (ann) => {
             try {
                 // get author info to display on announcement
@@ -54,6 +53,8 @@ router.post('', async (req, res) => {
                     _id: ann.authorId
                 });
                 
+                console.log(`user: ${user}`);
+                console.log(`ann: ${ann}`);
                 return {
                     id: ann._id,
                     title: ann.title,
@@ -119,7 +120,8 @@ router.post('/:id', async (req, res) => {
     let annId = req.params.id;                              // id of the announcement to be booked/confirmed
     let userId = req.body.userId;                           // id of the user executing the operation
     let userToConfirmId = req.body.userToConfirmId;    // id of the user whose booking is to be confirmed
-
+    // l'id DELL'0UTENTE ME LO DEVO PRENDERE DAI PARAMETRI
+    
     try {
         // retrieve announcement
         let ann = await Announcement.findById(annId);
