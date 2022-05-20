@@ -46,7 +46,20 @@
                     </div>
                 </div>
                 <div class="col">
-                    <div class="overflow-auto max-width h-100">
+                    <div class="overflow-auto max-width h-200">
+                        <div class="form-group" style="padding: 5px">
+                            <label for="filter">Search:</label>
+                            <input type="text" class="form-control" id="filter" name="filter"> 
+                            <button class="btn btn-primary" type="submit" onclick="loadAnnouncementsList()">Search</button>
+                            <div class="form-check-inline">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" id="filter-vegan" name="vegan" value="vegan"> Vegan
+                                    <input type="checkbox" class="form-check-input" id="filter-vegetarian" name="vegetarian" value="vegetarian"> Vegetarian
+                                    <input type="checkbox" class="form-check-input" id="filter-gluten-free" name="gluten-free" value="gluten-free"> Gluten-free
+                                </label>
+                                </div>
+                        </div>
+
                         <div id="contenitore-annunci" class="col">
                             
                         </div>
@@ -91,7 +104,16 @@
 
             // script to fetch announcements from backend
             function loadAnnouncementsList(){
-                fetch('http://localhost:3000/api/v1/announcements/')
+                //elimina eventuali annunci già visualizzati
+                $("#contenitore-annunci").empty(); 
+
+                // load filters if any
+                let filter = document.getElementById('filter').value;
+                let vegan = document.getElementById('filter-vegan').checked;
+                let vegetarian = document.getElementById('filter-vegetarian').checked;
+                let glutenfree = document.getElementById('filter-gluten-free').checked;
+
+                fetch(`http://localhost:3000/api/v1/announcements/?filter=${filter}&vegan=${vegan}&vegetarian=${vegetarian}&glutenfree=${glutenfree}`)
                 .then( res => {
                     if (!res.ok) {
                         console.log('Error fetching');
@@ -102,24 +124,24 @@
                     $.each(_json, function(index, item){
                         
                         if(item.reservations.length < item.maxReservations && !(item.username === item.title)){
-                        $("#contenitore-annunci").append(
-                            `<div class="card h-100 w-100 mb-2">
-                                <div class="card-body">
-                                    <table cellpadding="8">
-                                    <tr><td><h2 class="card-title">${item.title}</h2></td>
-                                    <td><h4>4 stelle</h4></td></tr>
-                                    </table>
-                                    <p class="card-subtitle" style="float: right;">tags: ${item.tags[1]}</p>
-                                    <p class="card-subtitle"><b>${item.tags[0]}</b></p>
-                                    <p class="card-text">${item.description}</p>
-                                </div>
-                                <div class="card-footer">
-                                    <a class="btn btn-primary" onclick="attempBooking(${item._id})">Prenota</a>
-                                    <p class="card-subtitle" style="float: right;">Posti già prenotati: ${item.reservations.length}/${item.maxReservations}</p>
-                                </div>
-                            </div>`
-                        );}
-                    });
+                            
+                            $("#contenitore-annunci").append(
+                                `<div class="card h-100 w-100 mb-2">
+                                    <div class="card-body">
+                                        <table cellpadding="8">
+                                        <tr><td><h2 class="card-title">${item.author.username}</h2></td>
+                                        <td><h4>4 stelle</h4></td></tr>
+                                        </table>
+                                        <p class="card-subtitle" style="float: right;">tags: ${item.tags.join(' ')}</p>
+                                        <p class="card-subtitle"><b>${item.title}</b></p>
+                                        <p class="card-text">${item.description}</p>
+                                    </div>
+                                    <div class="card-footer">
+                                        <a href="#" class="btn btn-primary" onclick="attempBooking(${item._id})">Prenota</a>
+                                        <p class="card-subtitle" style="float: right;">Posti già prenotati: ${item.reservations.length}/${item.maxReservations}</p>
+                                    </div>
+                            </div>`);
+                    }});
                 })
                 .catch( err => {
                     console.log("Error occurred: " + err);
