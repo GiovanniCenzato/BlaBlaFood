@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const users = require('./api/users');
+const announcements = require('./api/announcements,js');
 
 /**
  * Static HTML pages
@@ -17,5 +18,6 @@ app.use(express.urlencoded({extended: true}))
  * Routes
  */
 app.use('/api/v1/users', users);
+app.use('/api/v1/announcements', announcements);
 
 module.exports = app;
