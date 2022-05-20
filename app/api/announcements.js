@@ -35,7 +35,9 @@ router.post('', tokenCheck, async (req, res, next) => {
  * Retrieve all announcements
  */
  router.get('', async (req, res) => {
-     
+    // check for filters (if any)
+    var filters = req.query;
+    
     try {
         // get announcements from database
         let announcements = await Announcement.find({})
@@ -47,32 +49,49 @@ router.post('', tokenCheck, async (req, res, next) => {
             return;
         }
 
-        let announcementsList = await Promise.all(announcements.map( async (ann) => {
-            try {
-                // get author info to display on announcement
-                let user = await User.findOne({
-                    _id: ann.authorId
-                });
+
+        let announcementsList = await Promise.all(
+            announcements
+            .filter( ann => {
+                let okay = true;
+                if (filters.filter != '') {
+                    // title/description filter
+                    if (!ann.title.toString().toLowerCase().includes(filters.filter.toString().toLowerCase()) &&
+                    !ann.description.toString().toLowerCase().includes(filters.filter.toString().toLowerCase()) ) {
+                        okay = false;
+                    }
+                }
+                    
+                // vegan/vegetarian/glutenfree filter
+                if (filters.vegan == 'true' && !ann.tags.includes('VEG'))                { okay = false; }
+                if (filters.vegetarian == 'true' && !ann.tags.includes('vegetarian'))    { okay = false; }
+                if (filters.glutenfree == 'true' && !ann.tags.includes('gluten-free'))   { okay = false; }
                 
-                console.log(`user: ${user}`);
-                console.log(`ann: ${ann}`);
-                return {
-                    id: ann._id,
-                    title: ann.title,
-                    description: ann.description,
-                    tags: ann.tags,
-                    maxReservations: ann.maxReservations,
-                    reservations: ann.reservations,
-                    queuedReservations: ann.queuedReservations, // needed?
-                    author: user
-                };
+                // can return?
+                if (okay) return ann;
+            })
+            .map( async (ann) => {
+                try {
+                    // get author info to display on announcement
+                    let user = await User.findOne({
+                        _id: ann.authorId
+                    });
+                    
+                    return {
+                        id: ann._id,
+                        title: ann.title,
+                        description: ann.description,
+                        tags: ann.tags,
+                        maxReservations: ann.maxReservations,
+                        reservations: ann.reservations,
+                        queuedReservations: ann.queuedReservations, // needed?
+                        author: user
+                    };
 
-
-            } catch (e) {
-                console.log(`Error: ${e} retrieving user`);
-                return;
-            }
-
+                } catch (e) {
+                    console.log(`Error: ${e} retrieving user`);
+                    return;
+                }
         }));
         
         res.status(200).json(announcementsList);
