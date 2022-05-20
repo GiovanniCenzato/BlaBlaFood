@@ -24,7 +24,7 @@
                             <a class="nav-link" href="#">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="announcement.html">Crea annuncio</a>
+                            <a class="nav-link" href="#">Crea annuncio</a>
                           </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Accesso</a>
@@ -48,7 +48,47 @@
                 <div class="col">
                     <div class="overflow-auto max-width h-100">
                         <div id="contenitore-annunci" class="col">
-                            
+                            <div class="card h-100 w-100 mb-2">
+                                <div class="card-body">
+                                    <table cellpadding ="8">
+                                        <img class="card-img-top" src="https://termoidraulicabassini.it/wp-content/uploads/2015/12/utente.png" alt="Card image" style="width:60px;height:60px;"></td>
+                                        <td><h2 class="card-title">Mario Rossi</h2></td> <td><h4>4 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWeQlIXch2fjexAFofyEt1CtkQEW0tPpqwpA&usqp=CAU" alt="Stella" style="width:25px;height:25px;"></h4></td></tr> 
+                                        <tr><td colspan="2"><p class="card-text">Gnocchi al ragù</p></td></tr>
+                                    </table>                                   
+                                </div>
+                                <div class="card-footer"></div>
+                            </div>
+
+                            <div class="card h-100 w-100 mb-2">
+                                <div class="card-body">
+                                    <table cellpadding="8">
+                                    <tr><td><h2 class="card-title">Sofia Scamponi</h2></td>
+                                    <td><h4>4 stelle</h4></td></tr>
+                                    </table>
+                                    <p class="card-subtitle" style="float: right;">tags: non veg</p>
+                                    <p class="card-subtitle"><b>Pollo al curry</b></p>
+                                    <p class="card-text">Buonissimo gnam gnam che bontà!</p>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="#" class="btn btn-primary">Prenota</a>
+                                    <p class="card-subtitle" style="float: right;">Posti già prenotati: 3/4</p>
+                                </div>
+                            </div>
+
+                            <div class="card h-100 w-100 mb-2">
+                                <div class="card-body">
+                                    <h2 class="card-title">Roberto Sandri</h2>
+                                    <p class="card-text">Pasta al pomodoro</p>
+                                </div>
+                                <div class="card-footer"></div>
+                            </div>
+                            <div class="card h-100 w-100 mb-2">
+                                <div class="card-body">
+                                    <h2 class="card-title">Andrea Fiore</h2>
+                                    <p class="card-text">Minestrone con fagioli</p>
+                                </div>
+                                <div class="card-footer"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -57,26 +97,10 @@
 
 
         <script>
-            // script 
-            function attempBooking(announcementId) {
-                fetch(`http://localhost:3000/api/v1/announcements/${announcementId}`)
-                    .then( res => {
-                        if (!res.ok) {
-                            console.log('Error sending request');
-                        }
-                        return res.json();
-                    })
-                    .then( _json => {
-                       alert(_json.message);
-                    })
-                    .catch( err => {
-                        console.log("Error occurred: " + err);
-                });
-            }
-
             // script to fetch announcements from backend
             function loadAnnouncementsList(){
-                fetch('http://localhost:3000/api/v1/announcements/')
+                $("#contenitore-annunci").empty();    //elimina eventuali annunci già visualizzati
+                fetch('localhost:3000/api/v1/announcements/')
                 .then( res => {
                     if (!res.ok) {
                         console.log('Error fetching');
@@ -85,25 +109,25 @@
                 })
                 .then( _json => {
                     $.each(_json, function(index, item){
-                        
-                        if(item.reservations.length < item.maxReservations && !(item.username === item.title)){
-                        $("#contenitore-annunci").append(
-                            `<div class="card h-100 w-100 mb-2">
-                                <div class="card-body">
-                                    <table cellpadding="8">
-                                    <tr><td><h2 class="card-title">${item.title}</h2></td>
-                                    <td><h4>4 stelle</h4></td></tr>
-                                    </table>
-                                    <p class="card-subtitle" style="float: right;">tags: ${item.tags[1]}</p>
-                                    <p class="card-subtitle"><b>${item.tags[0]}</b></p>
-                                    <p class="card-text">${item.description}</p>
-                                </div>
-                                <div class="card-footer">
-                                    <a class="btn btn-primary" onclick="attempBooking(${item._id})">Prenota</a>
-                                    <p class="card-subtitle" style="float: right;">Posti già prenotati: ${item.reservations.length}/${item.maxReservations}</p>
-                                </div>
-                            </div>`
-                        );}
+                        if(item.reservations.length < item.maxReservations /*&& controllo cuoco != persona che prenota*/){
+                            var stringa_tags = new String("");
+                            $.each(item.tags, function(j, k){ stringa_tags.concat(k+" ");});
+                            $("#contenitore-annunci").append(`<div class="card h-100 w-100 mb-2">
+                                    <div class="card-body">
+                                        <table cellpadding="8">
+                                        <tr><td><h2 class="card-title">${item.author.username}</h2></td>
+                                        <td><h4>4 stelle</h4></td></tr>
+                                        </table>
+                                        <p class="card-subtitle" style="float: right;">tags: ${stringa_tags}</p>
+                                        <p class="card-subtitle"><b>${item.title}</b></p>
+                                        <p class="card-text">${item.description}</p>
+                                    </div>
+                                    <div class="card-footer">
+                                        <a href="#" class="btn btn-primary">Prenota</a>
+                                        <p class="card-subtitle" style="float: right;">Posti già prenotati: ${item.reservations.length}/${item.maxReservations}</p>
+                                    </div>
+                                </div>`);
+                        }
                     });
                 })
                 .catch( err => {
