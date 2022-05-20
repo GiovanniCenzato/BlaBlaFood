@@ -27,7 +27,7 @@
             <div class="card col-6 mt-5 ml-5">
                 <div class="card-body p-4 p-md-5">
                     <h3 class="mb-4 pb-2 pb-md-0 mb-md-5">Registrazione</h3>
-                    <form method="POST" action="localhost:3000/api/v1/users">
+                    <form>
                         <div class="row">
                             <div class="col-md-6 mb-4"> 
                                 <div class="form-outline">
@@ -105,7 +105,7 @@
 
                         <div class="row" >
                             <div class="col-md-6 mb-4 d-flex text-center">
-                                <input class="btn btn-primary btn-lg" type="submit" value="Registrati" />
+                                <input class="btn btn-primary btn-lg" type="submit" onclick="register()" value="Registrati" />
                             </div>
                         </div>
 
@@ -141,7 +141,7 @@
 
                     <div class="row mt-4">
                         <div class="col-md-6 mb-4 d-flex text-center">
-                            <input class="btn btn-primary btn-lg" type="submit" value="Accedi" />
+                            <input class="btn btn-primary btn-lg" type="submit" onclick="login()" value="Accedi" />
                         </div>
                         <div class="col-md-6 mb-4 d-flex text-center">
                             <a href="#"> Ho dimenticato la password </a>
@@ -171,6 +171,19 @@
             if(password != password2) {
                 alert('Password diverse!');
             }
+        }
+
+        function login(){
+            let res = await fetch('http://localhost:3000/api/v1/auth/login', {
+                body: {
+                    email: document.getElementById('email-login').value,
+                    password: document.getElementById('password-login').value
+                }
+            });
+            console.log(res);
+        }
+
+        function register() {
         }
     </script>
         </body>
