@@ -132,16 +132,16 @@ router.get('/:id', async (req, res) => {
 
 /**
  * Attempt to book one specific announcement or confirm one booking
- * - in the request body there's the logged user's id
- * - if the user's id is the same as the announcement creator, 
+ * - if the userId in headers (the user performing the operation) is the same as the announcement creator
  *     the creator is trying to confirm a booking (must also include the user id to be accepted) 
- */
+ * - else
+ *      a user (the one in loggedin) is trying to book an announcement
+*/
 router.post('/:id', tokenCheck, async (req, res, next) => {
     let annId = req.params.id;                              // id of the announcement to be booked/confirmed
-    let userId = req.loggedin._id;                          // id of the user executing the operation
+    let userId = req.loggedin.id;                          // id of the user executing the operation
     let userToConfirmId = req.body.userToConfirmId;    // id of the user whose booking is to be confirmed
-    // l'id DELL'0UTENTE ME LO DEVO PRENDERE DAI PARAMETRI
-    
+
     try {
         // retrieve announcement
         let ann = await Announcement.findById(annId);
@@ -182,12 +182,13 @@ router.post('/:id', tokenCheck, async (req, res, next) => {
     
                 // push the user's id to reservation queue
                 ann.queuedReservations.push(userId);
+                console.log(ann);
                 ann = await ann.save();
     
                 // response of successful operation
                 console.log(`Announcement updated!`);
                 return res.status(201).json({
-                    message: `Announcement updated!`
+                    message: `Booking done! Waiting for user's approval...`
                 });
     
             } else {

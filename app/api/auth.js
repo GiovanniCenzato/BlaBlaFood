@@ -14,7 +14,7 @@ const jwt = require('jsonwebtoken');
         });
 
         // check password TODO: implement hashing
-        if (user.comparePassword(user.password, req.body.password)) {
+        if (!user.comparePasswords(user.password, req.body.password)) {
             console.log('Login failed: wrong password');
             return res.status(401).json({
                 message: 'Login failed, invalid user or password.'

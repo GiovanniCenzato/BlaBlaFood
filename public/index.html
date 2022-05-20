@@ -71,35 +71,33 @@
 
         <script>
             // logged in user infos
-            const loggedin = {
-                _id: '62874fc7c963ca745757c655'
-            };
+            const loggedin = sessionStorage.getItem('loggedin');
 
-            // script 
-            function attempBooking(announcementId) {
-                userToConfirmId
-                fetch(`http://localhost:3000/api/v1/announcements/${announcementId}`, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        userToConfirmId: loggedin._id
-                    }) // body data type must match "Content-Type" header
-                })
-                    .then( res => {
-                        if (!res.ok) {
-                            console.log('Error sending request');
+            // script to attempt booking a meal
+            async function attempBooking(announcementId) {
+                console.log(typeof(announcementId));
+                if (loggedin == null || loggedin == 'undefined') {
+                    window.location.href = 'login.html';
+                } else {
+                    fetch(`http://localhost:3000/api/v1/announcements/${announcementId}`, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-access-token': `${loggedin}`
                         }
+                    })
+                    .then(res => {
+                        if (!res.ok)
+                            console.log('Error sending request');
                         return res.json();
+                    }).then(_json => {
+                        console.log(_json.message);
+                        alert(_json.message);
                     })
-                    .then( _json => {
-                       alert(_json.message);
-                    })
-                    .catch( err => {
-                        console.log("Error occurred: " + err);
-                });
+
+
+                }
             }
 
             // script to fetch announcements from backend
@@ -137,7 +135,7 @@
                                         <p class="card-text">${item.description}</p>
                                     </div>
                                     <div class="card-footer">
-                                        <a href="#" class="btn btn-primary" onclick="attempBooking(${item._id})">Prenota</a>
+                                        <a href="#" class="btn btn-primary" onclick="attempBooking('${item.id}')">Prenota</a>
                                         <p class="card-subtitle" style="float: right;">Posti già prenotati: ${item.reservations.length}/${item.maxReservations}</p>
                                     </div>
                             </div>`);

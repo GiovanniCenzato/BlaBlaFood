@@ -1,4 +1,4 @@
-
+const jwt = require('jsonwebtoken');
 /**
  * Checks if the JWT token in the request is valid
  * 
@@ -12,7 +12,7 @@
     
     // empty token
     if (!token) {
-        return res.status(403).redirect('login.html');
+        return res.status(403).redirect('/');
         // return res.status(401).json({
         //     message: 'No token provided',
         //     success: false
@@ -23,7 +23,7 @@
     jwt.verify(token, process.env.JWT_SECRET, (error, decodedToken) => {
         // token is not valid
         if (error) {
-            return res.status(403).redirect('login.html');
+            return res.status(403).redirect('/');
 
             // return res.status(403).json({
             //     message: 'Token validation failed',
@@ -33,6 +33,7 @@
 
         // token is valid, set in request and move on
         req.loggedin = decodedToken;
+        console.log(decodedToken);
         next();
     })
 }
