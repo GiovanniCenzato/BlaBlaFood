@@ -81,7 +81,7 @@
                 if (loggedin.token == null || loggedin.token == undefined) {
                     window.location.href = 'login.html';
                 } else {
-                    fetch(`http://localhost:8080/api/v1/announcements/${announcementId}`, {
+                    fetch(`/api/v1/announcements/${announcementId}`, {
                         method: 'POST',
                         mode: 'cors',
                         headers: {
@@ -119,7 +119,7 @@
                 let vegetarian = document.getElementById('filter-vegetarian').checked;
                 let glutenfree = document.getElementById('filter-gluten-free').checked;
 
-                fetch(`http://localhost:8080/api/v1/announcements/?filter=${filter}&vegan=${vegan}&vegetarian=${vegetarian}&glutenfree=${glutenfree}`)
+                fetch(`/api/v1/announcements/?filter=${filter}&vegan=${vegan}&vegetarian=${vegetarian}&glutenfree=${glutenfree}`)
                 .then( res => {
                     if (!res.ok) {
                         console.log('Error fetching');
