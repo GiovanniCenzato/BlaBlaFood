@@ -1,8 +1,9 @@
 const app = require('./app/app');
 const mongoose = require('mongoose');
+require('dotenv').config();
 
 // port
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 // connect to database
 app.locals.db = mongoose.connect(process.env.MONGODB_URL, {useNewUrlParser: true, useUnifiedTopology: true})
