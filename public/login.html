@@ -190,7 +190,8 @@
                 return res.json();
             }).then(_json => {
                 // save the token in sessionStorage
-                sessionStorage.setItem('loggedin', _json.token);
+                sessionStorage.setItem('token',_json.token);
+                sessionStorage.setItem('username',_json.username);
                 console.log('token saved to session storage');
                 window.location.href = 'index.html';
 
