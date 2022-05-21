@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user')
+const Announcement = require('../models/announcement')
 const tokenCheck = require('./tokenChecker');
 
 /**
@@ -32,6 +33,7 @@ const tokenCheck = require('./tokenChecker');
 
 router.get('/me', tokenCheck, async (req, res, next) => {
     // check for token 
+    console.log('lmao');
     if (!req.loggedin) {
         return res.status(403).json({
             message: 'Error, user not logged in'
@@ -43,11 +45,16 @@ router.get('/me', tokenCheck, async (req, res, next) => {
         email: req.loggedin.email
     });
 
-    // send back infos as json
-    res.status(200).json({
-        message: 'User retrieved correctly',
-        user: _user
+    let announcementsList = await Announcement.find({
+        authorId: _user._id
     });
+
+    // send back infos as json
+    res.status(200).json(JSON.stringify({
+        message: 'User retrieved correctly',
+        user: _user,
+        announcements: announcementsList,
+    }));
 })
 
 /**

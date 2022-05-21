@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
  */
  const tokenChecker = (req, res, next) => {
     // get token from either body, query or headers
-    let token = req.body.token || req.query.token || req.headers['x-access-token'];
+    let token = req.headers['x-access-token'] || req.body.token || req.query.token;
     
     // empty token
     if (!token) {
@@ -18,7 +18,7 @@ const jwt = require('jsonwebtoken');
         //     success: false
         // })
     }
-    
+
     // validation
     jwt.verify(token, process.env.JWT_SECRET, (error, decodedToken) => {
         // token is not valid

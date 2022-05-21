@@ -181,7 +181,8 @@ router.post('/:id', tokenCheck, async (req, res, next) => {
             if (ann.reservations.length < ann.maxReservations) {
     
                 // push the user's id to reservation queue
-                ann.queuedReservations.push(userId);
+                let user = await User.findById(userId);
+                ann.queuedReservations.push(user);
                 console.log(ann);
                 ann = await ann.save();
     

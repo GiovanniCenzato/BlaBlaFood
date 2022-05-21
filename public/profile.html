@@ -10,23 +10,23 @@
         <!-- Core theme CSS (includes Bootstrap)-->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     </head>
     <body>
 
         <script>
             $(document).ready(function(){
-                loadAnnouncementsList();
+                loadUserInfo();
 
                 // set content of login/logout button
-                if (loggedin.token == null) {
-                    document.getElementById('profile_btn').disabled = true;
+                if (sessionStorage.getItem('token') == null) {
+                    document.getElementById('profile_btn').setAttribute('href', ''); // TEMP
                     document.getElementById('login_logout_btn').innerText = 'Login';
                     document.getElementById('login_logout_btn').setAttribute('onclick', 'window.location.href = "login.html"')
                     document.getElementById('login_logout_dropdown').innerText = 'Accedi';
                 } else {
-                    document.getElementById('profile_btn').disabled = false;
+                    document.getElementById('profile_btn').setAttribute('href', 'profile.html'); // TEMP
                     document.getElementById('login_logout_btn').innerText = 'Logout';
                     document.getElementById('login_logout_btn').setAttribute('onclick', 'logout()')
                     document.getElementById('login_logout_dropdown').innerText = `Ciao, user`;
@@ -50,8 +50,6 @@
                             <a class="nav-link dropdown-toggle" id="login_logout_dropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Accesso</a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" id="profile_btn" href="profile.html">Profile</a></li>
-                            </ul>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" id="login_logout_btn" href="login.html">Login</a></li>
                             </ul>
                         </li>
@@ -90,9 +88,80 @@
                         </tr>
                             <td align="center"><input class="btn btn-dark btn-lg" type="submit" value="Modifica profilo" style="font-size:15px;" /></td>
                         </table>
-
-
+                </div>
+                <div>
+                    <h2>Prenotazioni in attesa</h2>
+                    <div id="container-own-annunci">
+                        
+                    </div>
                 </div>
             </div>
+            <script>
+              
+                function loadUserInfo(){
+                    fetch(`/api/v1/users/me`, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-access-token': `${sessionStorage.getItem('token')}`
+                        }
+                    })
+                    .then(res => {
+                        console.log(res);
+                        if(!res.ok){
+                            console.log('err!');
+                        }
+                        return res.json();
+                    })
+                    .then( _json => {
+                        let user = _json.user;
+                        let annList = json.announcements;
+
+                        $.each(annList, function(index, item){
+                            for (let waitingUser of item.queuedReservations) {
+                                $("#container-own-annunci").append(
+                                    `<div class="card h-100 w-100 mb-2">
+                                        <div class="card-body">
+                                            <h2 class="card-title">${item.title}</h2>
+                                            <p class="card-text">Waiting: ${waitingUser.username}</p>
+                                        </div>
+                                        <button onclick="acceptUser('${item._id}', '${waitingUser._id}')" >Accetta</button>
+                                </div>`);
+
+                            }
+                        });
+                    })
+                    .catch( err => {
+                        console.log("Error occurred: " + err);
+                    });
+                }
+
+                function acceptUser(annid, userid) {
+                    fetch(`/api/v1/announcements/${annid}`, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-access-token': `${sessionStorage.getItem('token')}`
+                        },
+                        body: {
+                            userToConfirmId: userid
+                        }
+                    })
+                    .then(res => {
+                        if(!res.ok){
+                            console.log('err!');
+                        }
+                        return res.json();
+                    })
+                    .then( _json => {
+                        console.log(_json);
+                    })
+                    .catch( err => {
+                        console.log("Error occurred: " + err);
+                    });
+                }
+            </script>
     </body>
 </html>

@@ -16,15 +16,15 @@
         <script>
             $(document).ready(function(){
                 loadAnnouncementsList();
-
+                
                 // set content of login/logout button
-                if (loggedin.token == null) {
-                    document.getElementById('profile_btn').disabled = true;
+                if (sessionStorage.getItem('token') == null) {
+                    document.getElementById('profile_btn').setAttribute('href', '');
                     document.getElementById('login_logout_btn').innerText = 'Login';
                     document.getElementById('login_logout_btn').setAttribute('onclick', 'window.location.href = "login.html"')
                     document.getElementById('login_logout_dropdown').innerText = 'Accedi';
                 } else {
-                    document.getElementById('profile_btn').disabled = false;
+                    document.getElementById('profile_btn').setAttribute('href', 'profile.html');
                     document.getElementById('login_logout_btn').innerText = 'Logout';
                     document.getElementById('login_logout_btn').setAttribute('onclick', 'logout()')
                     document.getElementById('login_logout_dropdown').innerText = `Ciao, user`;
@@ -48,8 +48,6 @@
                             <a class="nav-link dropdown-toggle" id="login_logout_dropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Accesso</a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" id="profile_btn" href="profile.html">Profile</a></li>
-                            </ul>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" id="login_logout_btn" href="login.html">Login</a></li>
                             </ul>
                         </li>
@@ -92,15 +90,12 @@
 
         <script>
             // logged in user infos
-            const loggedin = {
-                token: sessionStorage.getItem('token'),
-                username: sessionStorage.getItem('username'),
-            };
+            
 
             // script to attempt booking a meal
             function attemptBooking(announcementId) {
                 console.log('lol');
-                if (loggedin.token == null || loggedin.token == undefined) {
+                if (sessionStorage.getItem('token') == null || sessionStorage.getItem('token') == undefined) {
                     window.location.href = 'login.html';
                 } else {
                     fetch(`/api/v1/announcements/${announcementId}`, {
@@ -108,7 +103,7 @@
                         mode: 'cors',
                         headers: {
                             'Content-Type': 'application/json',
-                            'x-access-token': `${loggedin.token}`
+                            'x-access-token': `${sessionStorage.getItem('token')}`
                         }
                     })
                     .then(res => {
