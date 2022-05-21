@@ -163,7 +163,7 @@ router.post('/:id', tokenCheck, async (req, res, next) => {
     
                 // response of successful operation
                 console.log(`Announcement updated!`);
-                return res.status(201).json({
+                return res.status(200).json({
                     message: `Announcement updated!`
                 });
     
