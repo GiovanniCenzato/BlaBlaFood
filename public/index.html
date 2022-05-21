@@ -27,10 +27,9 @@
                             <a class="nav-link" href="announcement.html">Crea annuncio</a>
                           </li>
                         <li class="nav-item dropdown">
-                            <!-- DA AGGIUNGERE MODIFICA MENU IN CASO SI SIA LOGGATI -->
-                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Accesso</a>
+                            <a class="nav-link dropdown-toggle" id="login_logout_dropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Accesso</a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="login.html">Login</a></li>
+                                <li><a class="dropdown-item" id="login_logout_btn" href="login.html">Login</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -71,12 +70,15 @@
 
         <script>
             // logged in user infos
-            const loggedin = sessionStorage.getItem('loggedin');
+            const loggedin = {
+                token: sessionStorage.getItem('token'),
+                username: sessionStorage.getItem('username'),
+            };
 
             // script to attempt booking a meal
             async function attempBooking(announcementId) {
                 console.log(typeof(announcementId));
-                if (loggedin == null || loggedin == 'undefined') {
+                if (loggedin.token == null || loggedin.token == undefined) {
                     window.location.href = 'login.html';
                 } else {
                     fetch(`http://localhost:3000/api/v1/announcements/${announcementId}`, {
@@ -84,7 +86,7 @@
                         mode: 'cors',
                         headers: {
                             'Content-Type': 'application/json',
-                            'x-access-token': `${loggedin}`
+                            'x-access-token': `${loggedin.token}`
                         }
                     })
                     .then(res => {
@@ -98,6 +100,12 @@
 
 
                 }
+            }
+
+            function logout(){
+                alert('You\'re being logged out');
+                sessionStorage.clear();
+                window.location.href = 'index.html';
             }
 
             // script to fetch announcements from backend
@@ -148,6 +156,17 @@
 
             $(document).ready(function(){
                 loadAnnouncementsList();
+
+                // set content of login/logout button
+                if (loggedin.token == null) {
+                    document.getElementById('login_logout_btn').innerText = 'Login';
+                    document.getElementById('login_logout_btn').setAttribute('onclick', 'window.location.href = "login.html"')
+                    document.getElementById('login_logout_dropdown').innerText = 'Accedi';
+                } else {
+                    document.getElementById('login_logout_btn').innerText = 'Logout';
+                    document.getElementById('login_logout_btn').setAttribute('onclick', 'logout()')
+                    document.getElementById('login_logout_dropdown').innerText = `Ciao, user`;
+                }
             });
         </script>
     </body>
