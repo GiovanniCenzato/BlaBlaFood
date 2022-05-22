@@ -9,8 +9,8 @@ L’utente che crea l’annuncio deve fornire delle indicazioni su cosa cucina, 
 L'applicazione deve implementare diverse modalità di pagamento, tra cui in contanti e online, ad esempio via paypal e revolut, così da affrontare il tema della sostenibilità anche nel mondo dei pagamenti.
 
 Questa piattaforma:
-1.favorisce la socializzazione in una maniera alternativa
-1.combatte lo spreco alimentare, permettendo agli utenti di vendere il proprio cibo
-1.permette di guadagnare semplicemente cucinando
-1.è un'alternativa eco friendly al fast food
-1.offre la possibilità di consumare un pasto homemade senza doverlo cucniare
+1. favorisce la socializzazione in una maniera alternativa
+1. combatte lo spreco alimentare, permettendo agli utenti di vendere il proprio cibo
+1. permette di guadagnare semplicemente cucinando
+1. è un'alternativa eco friendly al fast food
+1. offre la possibilità di consumare un pasto homemade senza doverlo cucniare
