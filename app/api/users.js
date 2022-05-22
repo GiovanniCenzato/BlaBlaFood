@@ -33,7 +33,6 @@ const tokenCheck = require('./tokenChecker');
 
 router.get('/me', tokenCheck, async (req, res, next) => {
     // check for token 
-    console.log('lmao');
     if (!req.loggedin) {
         return res.status(403).json({
             message: 'Error, user not logged in'
@@ -49,12 +48,13 @@ router.get('/me', tokenCheck, async (req, res, next) => {
         authorId: _user._id
     });
 
+
     // send back infos as json
-    res.status(200).json(JSON.stringify({
+    res.status(200).json({
         message: 'User retrieved correctly',
         user: _user,
         announcements: announcementsList,
-    }));
+    });
 })
 
 /**

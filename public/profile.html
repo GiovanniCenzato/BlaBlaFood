@@ -21,7 +21,7 @@
 
                 // set content of login/logout button
                 if (sessionStorage.getItem('token') == null) {
-                    document.getElementById('profile_btn').setAttribute('href', ''); // TEMP
+                    document.getElementById('profile_btn').setAttribute('href', 'login.html'); // TEMP
                     document.getElementById('login_logout_btn').innerText = 'Login';
                     document.getElementById('login_logout_btn').setAttribute('onclick', 'window.location.href = "login.html"')
                     document.getElementById('login_logout_dropdown').innerText = 'Accedi';
@@ -36,7 +36,7 @@
         <!-- Responsive navbar-->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
-                <a class="navbar-brand" href="#">BlaBlaFood</a>
+                <a class="navbar-brand" href="index.html">BlaBlaFood</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
@@ -83,10 +83,10 @@
                             <td>via della Croce 12</td>
                         </tr>
                         <tr>
-                            <td align="center">Username</td>
+                            <td>Username</td>
                             <td>05/08/1998</td>
                         </tr>
-                            <td align="center"><input class="btn btn-dark btn-lg" type="submit" value="Modifica profilo" style="font-size:15px;" /></td>
+                            <td><input class="btn btn-dark btn-lg" type="submit" value="Modifica profilo" style="font-size:15px;" /></td>
                         </table>
                 </div>
                 <div>
@@ -100,35 +100,29 @@
               
                 function loadUserInfo(){
                     fetch(`/api/v1/users/me`, {
-                        method: 'POST',
-                        mode: 'cors',
+                        method: 'GET',
                         headers: {
-                            'Content-Type': 'application/json',
                             'x-access-token': `${sessionStorage.getItem('token')}`
                         }
                     })
                     .then(res => {
-                        console.log(res);
-                        if(!res.ok){
-                            console.log('err!');
-                        }
+                        if(!res.ok)
+                            console.log('error!');
                         return res.json();
                     })
                     .then( _json => {
                         let user = _json.user;
-                        let annList = json.announcements;
-
+                        let annList = _json.announcements;
                         $.each(annList, function(index, item){
                             for (let waitingUser of item.queuedReservations) {
                                 $("#container-own-annunci").append(
-                                    `<div class="card h-100 w-100 mb-2">
+                                    `<div class="card h-100 w-100 mb-2" id="${item._id}">
                                         <div class="card-body">
-                                            <h2 class="card-title">${item.title}</h2>
-                                            <p class="card-text">Waiting: ${waitingUser.username}</p>
+                                            <h2 class="card-title">Announcement: ${item.title}</h2>
+                                            <p class="card-text">Waiting user: ${waitingUser.username}</p>
                                         </div>
                                         <button onclick="acceptUser('${item._id}', '${waitingUser._id}')" >Accetta</button>
                                 </div>`);
-
                             }
                         });
                     })
@@ -138,25 +132,28 @@
                 }
 
                 function acceptUser(annid, userid) {
-                    fetch(`/api/v1/announcements/${annid}`, {
+                    fetch(`/api/v1/announcements/${annid.toString()}`, {
                         method: 'POST',
                         mode: 'cors',
                         headers: {
                             'Content-Type': 'application/json',
                             'x-access-token': `${sessionStorage.getItem('token')}`
                         },
-                        body: {
+                        body: JSON.stringify({
                             userToConfirmId: userid
-                        }
+                        })
                     })
                     .then(res => {
-                        if(!res.ok){
-                            console.log('err!');
-                        }
+                        if(!res.ok)
+                            console.log('error!');
                         return res.json();
                     })
                     .then( _json => {
-                        console.log(_json);
+                        // success! inform the user
+                        alert(_json.message);
+
+                        // remove the div
+                        document.getElementById(item._id).remove();
                     })
                     .catch( err => {
                         console.log("Error occurred: " + err);
