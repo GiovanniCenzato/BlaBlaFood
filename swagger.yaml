@@ -1,0 +1,148 @@
+swagger: '2.0'
+info:
+  version: '1.0'
+  title: "BlaBlaFood"
+  description: BlaBlaFood is a webapp where users can share posts within the community to offer meals, to cook together, to buy and take away, or to eat at cook's house.
+  license:
+    name: MIT
+    url: https://github.com/apiaryio/polls-api/blob/master/LICENSE
+host: polls.apiblueprint.org
+basePath: /api/v1/
+schemes:
+- http
+consumes:
+- application/json
+produces:
+- application/json
+paths:
+  /users:
+    x-summary: Users Collection
+    get:
+      summary: Retrieve all users
+      responses:
+        200:
+          description: 'Successful response'
+        404:
+          description: 'No user found in database'
+
+    post:
+      summary: Create a new user
+      description: |
+        Allows to save a new user to database sending user's parameters
+      parameters:
+        - name: user
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        201:
+          description: 'New user successfully saved!'
+          
+  /users/me:
+    get:
+      summary: Retrieve info about a specific user
+      responses:
+        200:
+          description: 'User retrieved correctly'
+        403:
+          description: 'Error user not logged in'
+            
+  /announcements:
+    x-summary: Announcements Collection
+    get:
+      summary: Retrieve all announcements
+      responses:
+        200:
+          description: 'Successful response'
+        404:
+          description: 'No announcement found in database'
+            
+    post:
+      summary: Create a new user
+      description: |
+        Allows to save a new user to database sending user's parameters
+      parameters:
+        - name: user
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        201:
+          description: 'New user successfully saved!'
+  
+  /announcements/:id:
+    x-summary: Single Announcement
+    get:
+      summary: Retrieve a specific announcement
+      responses:
+        201:
+          description: 'Found announcement with id'
+
+        403:
+          description: 'Error retrieving announcement'
+            
+    post:
+      summary: Update specific announcement
+      description: |
+        Allows to either book an announcement or confirm a booking (if user is the cook):
+        - if the userId in headers (the user performing the operation) is the same as the announcement creator...
+          ... then the creator is trying to confirm a booking (must also include the user id to be accepted) 
+        - else...
+          ... a user (the one in loggedin) is trying to book an announcement
+
+      responses:
+        200:
+          description: 'New user successfully saved!'
+        201:
+          description: 'Booking done! Waiting for users approval...'
+        403:
+          description: 'Announcement is already full'
+
+  /auth/login:
+    post:
+      summary: Authenticate user
+      description: |
+        Checks sent password with the one in the database and, if equal,
+        signs a new jwt and sends it back in the response
+      parameters:
+        - name: user
+          description: 'user'
+          in: body
+          schema:
+            $ref: '#/definitions/User'
+          required: true
+      responses:
+        403:
+          description: 'Login failed: wrong password'
+        200:
+          description: 'Login successful'
+
+definitions:
+  User:
+    title: User
+    type: object
+    properties:
+      user:
+        type: string
+      surname:
+        type: string
+      username:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      home:
+        type: string
+      phonenumber:
+        type: string
+      birthday:
+        type: string
+  String:
+    title: string
+    type: string
+  Id:
+    title: id
+    type: string
