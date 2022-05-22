@@ -27,8 +27,9 @@ const tokenCheck = require('./tokenChecker');
     }
 
     // return response
-    res.status(201).send(`New user ${req.body.username} successfully saved!`);
-    
+    res.status(201).json({
+        message: `New user ${req.body.username} successfully saved!`
+    });
 })
 
 router.get('/me', tokenCheck, async (req, res, next) => {
