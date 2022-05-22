@@ -1,7 +1,35 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user')
+const Announcement = require('../models/announcement')
 const tokenCheck = require('./tokenChecker');
+
+/**
+ * Create a new user
+ */
+ router.post('', async (req, res) => {
+    // check if user with the same username 
+
+    // set new user's data
+    let newUser = new User({
+        name: req.body.name,
+        username: req.body.username,
+        email: req.body.email,
+        password: req.body.password,
+        home: req.body.home,
+    })
+
+    try {
+        newUser = await newUser.save()
+        console.log(`New user ${req.body.username} successfully saved!`);
+    } catch {
+        console.log(`Error trying to save ${req.body.username} to database.`);
+    }
+
+    // return response
+    res.status(201).send(`New user ${req.body.username} successfully saved!`);
+    
+})
 
 router.get('/me', tokenCheck, async (req, res, next) => {
     // check for token 
@@ -16,10 +44,16 @@ router.get('/me', tokenCheck, async (req, res, next) => {
         email: req.loggedin.email
     });
 
+    let announcementsList = await Announcement.find({
+        authorId: _user._id
+    });
+
+
     // send back infos as json
     res.status(200).json({
         message: 'User retrieved correctly',
-        user: _user
+        user: _user,
+        announcements: announcementsList,
     });
 })
 

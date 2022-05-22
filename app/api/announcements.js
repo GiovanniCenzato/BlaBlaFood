@@ -151,20 +151,20 @@ router.get('/:id', async (req, res) => {
  * - else
  *      a user (the one in loggedin) is trying to book an announcement
 */
+// TODO: check if user already tried to book
 router.post('/:id', tokenCheck, async (req, res, next) => {
     let annId = req.params.id;                              // id of the announcement to be booked/confirmed
-    let userId = req.loggedin.id;                          // id of the user executing the operation
-    let userToConfirmId = req.body.userToConfirmId;    // id of the user whose booking is to be confirmed
+    let userId = req.loggedin.id;                           // id of the user executing the operation
+    let userToConfirmId = req.body.userToConfirmId;         // id of the user whose booking is to be confirmed
 
     try {
         // retrieve announcement
         let ann = await Announcement.findById(annId);
         
-        // check if the userId is the same as the announcement => confirm a booking
+        // ===================================
+        // === creator is accepting a user ===
+        // ===================================
         if (ann.authorId == userId) {
-            // === creator is accepting a user ===
-            console.log('user id == creator');
-
             // check if there's room left
             if (ann.reservations.length < ann.maxReservations) {
     
@@ -172,13 +172,14 @@ router.post('/:id', tokenCheck, async (req, res, next) => {
                 ann.queuedReservations = ann.queuedReservations.filter( el => {if (el!=userToConfirmId) return el});     
 
                 // push the user's id to reservations
-                ann.reservations.push(userToConfirmId);
+                let user = await User.findById(userToConfirmId);
+                ann.reservations.push(user);
                 ann = await ann.save();
     
                 // response of successful operation
                 console.log(`Announcement updated!`);
-                return res.status(201).json({
-                    message: `Announcement updated!`
+                return res.status(200).json({
+                    message: `User confirmed!`
                 });
     
             } else {
@@ -190,13 +191,15 @@ router.post('/:id', tokenCheck, async (req, res, next) => {
         }
 
         else {
-            // === user is booking ===
+            // ====================================
+            // === user is booking announcement ===
+            // ====================================
             // check if there's room left
             if (ann.reservations.length < ann.maxReservations) {
     
-                // push the user's id to reservation queue
-                ann.queuedReservations.push(userId);
-                console.log(ann);
+                // push the user's object to reservation queue
+                let user = await User.findById(userId);
+                ann.queuedReservations.push(user);
                 ann = await ann.save();
     
                 // response of successful operation

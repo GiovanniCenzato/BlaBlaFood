@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="it">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author1" content="Giulia Andreatta" />
+        <title>Announcement</title>
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    </head>
+    <body>
+
+        <script>
+            $(document).ready(function(){
+                loadUserInfo();
+
+                // set content of login/logout button
+                if (sessionStorage.getItem('token') == null) {
+                    document.getElementById('profile_btn').setAttribute('href', 'login.html'); // TEMP
+                    document.getElementById('login_logout_btn').innerText = 'Login';
+                    document.getElementById('login_logout_btn').setAttribute('onclick', 'window.location.href = "login.html"')
+                    document.getElementById('login_logout_dropdown').innerText = 'Accedi';
+                } else {
+                    document.getElementById('profile_btn').setAttribute('href', 'profile.html'); // TEMP
+                    document.getElementById('login_logout_btn').innerText = 'Logout';
+                    document.getElementById('login_logout_btn').setAttribute('onclick', 'logout()')
+                    document.getElementById('login_logout_dropdown').innerText = `Ciao, user`;
+                }
+            });
+        </script>
+        <!-- Responsive navbar-->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="index.html">BlaBlaFood</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="announcement.html">Crea annuncio</a>
+                          </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" id="login_logout_dropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Accesso</a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" id="profile_btn" href="profile.html">Profile</a></li>
+                                <li><a class="dropdown-item" id="login_logout_btn" href="login.html">Login</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Page content-->
+            <div class="card mt-5 mb-4 ml-4 mr-6 " style="width:80%">
+                <!-- Riga 1-->
+                <div class="card-body ml-6 mr-6 ">
+                    <figure class="text-center"> 
+                        <h3 class="mb-4 pb-2 pb-md-0 mb-md-5" >Sezione profilo</h3>
+                    </figure>
+                    <!-- Riga 2-->
+                    <table style="width:78%;" >
+                        <tr>
+                            <td rowspan="4" style="border: 3px solid white; width:30%;" align="center" ><img class="card-img-top" src="https://termoidraulicabassini.it/wp-content/uploads/2015/12/utente.png" alt="Card image" style="width:100px;height:100px;"></td>
+                            <td style="width:30%;"><h4><b>Informazioni Personali</b></h4></td>
+                            <td style="width:40%;"><h4><b>Descrizione</b></h4></td>
+                        </tr>
+                        <tr>
+                            <td>Nome</td>
+                            <td rowspan="4"> Descrizione personale dell'utente, se si hanno coinquilini, hobby, cosa si studia</td>
+                        </tr>
+                        <tr>
+                            <td>Cognome</td>
+                        </tr>
+                        <tr>
+                            <td>via della Croce 12</td>
+                        </tr>
+                        <tr>
+                            <td>Username</td>
+                            <td>05/08/1998</td>
+                        </tr>
+                            <td><input class="btn btn-dark btn-lg" type="submit" value="Modifica profilo" style="font-size:15px;" /></td>
+                        </table>
+                </div>
+                <div>
+                    <h2>Prenotazioni in attesa</h2>
+                    <div id="container-own-annunci">
+                        
+                    </div>
+                </div>
+            </div>
+            <script>
+              
+                function loadUserInfo(){
+                    fetch(`/api/v1/users/me`, {
+                        method: 'GET',
+                        headers: {
+                            'x-access-token': `${sessionStorage.getItem('token')}`
+                        }
+                    })
+                    .then(res => {
+                        if(!res.ok)
+                            console.log('error!');
+                        return res.json();
+                    })
+                    .then( _json => {
+                        let user = _json.user;
+                        let annList = _json.announcements;
+                        $.each(annList, function(index, item){
+                            for (let waitingUser of item.queuedReservations) {
+                                $("#container-own-annunci").append(
+                                    `<div class="card h-100 w-100 mb-2" id="${item._id}">
+                                        <div class="card-body">
+                                            <h2 class="card-title">Announcement: ${item.title}</h2>
+                                            <p class="card-text">Waiting user: ${waitingUser.username}</p>
+                                        </div>
+                                        <button onclick="acceptUser('${item._id}', '${waitingUser._id}')" >Accetta</button>
+                                </div>`);
+                            }
+                        });
+                    })
+                    .catch( err => {
+                        console.log("Error occurred: " + err);
+                    });
+                }
+
+                function acceptUser(annid, userid) {
+                    fetch(`/api/v1/announcements/${annid.toString()}`, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-access-token': `${sessionStorage.getItem('token')}`
+                        },
+                        body: JSON.stringify({
+                            userToConfirmId: userid
+                        })
+                    })
+                    .then(res => {
+                        if(!res.ok)
+                            console.log('error!');
+                        return res.json();
+                    })
+                    .then( _json => {
+                        // success! inform the user
+                        alert(_json.message);
+
+                        // remove the div
+                        document.getElementById(item._id).remove();
+                    })
+                    .catch( err => {
+                        console.log("Error occurred: " + err);
+                    });
+                }
+            </script>
+    </body>
+</html>
