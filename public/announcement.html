@@ -31,13 +31,13 @@
                     </figure>
                     <!-- Riga 2-->
                     <div class="mb-3">
-                        <label for="piattoDaCucinare" class="form-label">Piatto</label>
-                        <input type="email" class="form-control" id="piattoDaCucinare">
+                        <label for="piattoDaCucinare" class="form-label">Titolo annuncio</label>
+                        <input type="text" class="form-control" id="title">
                     </div>
                     <!-- Riga 3-->
                     <div class="mb-2">
                         <label for="descrizione" class="form-label">Descrizione</label>
-                        <textarea class="form-control" id="descrizione" rows="3" placeholder="breve descrizione del piatto, delle modalità di consumazione con relativo orario e se ti servisse qualche ingrediente"></textarea>
+                        <textarea class="form-control" id="description" rows="3" placeholder="breve descrizione del piatto, delle modalità di consumazione con relativo orario e se ti servisse qualche ingrediente"></textarea>
                     </div>
                     <!-- Riga 4-->
                     <form class="row g-3">
@@ -67,8 +67,13 @@
                         </div>
                         
                         <div >
-                            <label for="tag" class="form-label">Tag</label>
-                            <input type="tag" class="form-control" id="tag" placeholder="#vegano #tofu ...">
+                            <label for="tag" class="form-label">Tags</label>
+                            <input type="text" class="form-control" id="tags" placeholder="#vegano #tofu ... (separa i tag con uno spazio)">
+                        </div>
+
+                        <div>
+                            <label for="maxReservations" class="form-label">Max reservations</label>
+                            <input type="number" class="form-control" id="maxReservations" >
                         </div>
 
                         <div class="ml-2">
@@ -125,7 +130,7 @@
                     <!-- Riga 7-->
                     <div class="row mt-5" >
                         <div class="col-md-6 mb-4 d-flex text-center">
-                            <input class="btn btn-dark btn-lg" type="submit" value="Pubblica annuncio" />
+                            <input class="btn btn-dark btn-lg" onclick="publishAnnouncement()" value="Pubblica annuncio" />
                         </div>
                     </div>
 
@@ -135,5 +140,37 @@
             <!-- fine Card registrazione-->
         </div>
     </body>
+    <script>
+        async function publishAnnouncement() {
+            let tags = document.getElementById('tags').value;
+            tags = tags.split(' ');
+
+            fetch(`/api/v1/announcements`, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-access-token': `${sessionStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({
+                        title:     document.getElementById('title').value,
+                        description:     document.getElementById('description').value,
+                        tags: tags,
+                        maxReservations: document.getElementById('maxReservations').value,
+                    })
+            }).then(res => {
+                console.log(res);
+                if (!res.ok)
+                    console.log('Error sending request');
+                return res.json();
+            }).then(_json => {
+                // redirect to login for simplicity
+                console.log(_json);
+                
+                alert(_json.message);
+                // clear fields...
+            });
+        }
+    </script>
 </html>
 

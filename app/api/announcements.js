@@ -8,12 +8,24 @@ const tokenCheck = require('./tokenChecker');
  * Create a new announcement
  */
 router.post('', tokenCheck, async (req, res, next) => {
+    // check for token 
+    if (!req.loggedin) {
+        return res.status(403).json({
+            message: 'Error, user not logged in'
+        });
+    }
+    
+    // get user with email from request
+    let _user = await User.findOne({
+        email: req.loggedin.email
+    });
+    
     // set new announcement's data
     let newAnn = new Announcement({
         title: req.body.title,
         description: req.body.description,
         tags: req.body.tags,
-        authorId: req.body.authorId,
+        authorId: _user._id,
         reservations: [],
         maxReservations: req.body.maxReservations,
         queuedReservations: []
@@ -27,7 +39,9 @@ router.post('', tokenCheck, async (req, res, next) => {
     }
 
     // return response
-    res.status(201).send(`New announcement ${req.body.title} successfully saved!`);
+    res.status(201).json({
+        message: `New announcement ${req.body.title} successfully saved!`
+    });
     
 });
 
