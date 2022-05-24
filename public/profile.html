@@ -11,6 +11,7 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="script.js"></script>
 
     </head>
     <body>
@@ -73,31 +74,36 @@
                             <td style="width:40%;"><h4><b>Descrizione</b></h4></td>
                         </tr>
                         <tr>
-                            <td>Nome</td>
-                            <td rowspan="4"> Descrizione personale dell'utente, se si hanno coinquilini, hobby, cosa si studia</td>
+                            <td id="name">Nome</td>
+                            <td rowspan="4" id="description"> Descrizione personale dell'utente, se si hanno coinquilini, hobby, cosa si studia</td>
                         </tr>
                         <tr>
-                            <td>Cognome</td>
+                            <td id="surname">Cognome</td>
                         </tr>
                         <tr>
-                            <td>via della Croce 12</td>
+                            <td id="home">via della Croce 12</td>
                         </tr>
                         <tr>
-                            <td>Username</td>
-                            <td>05/08/1998</td>
+                            <td id="username">Username</td>
+                            <td id="birthday">05/08/1998</td>
                         </tr>
-                            <td><input class="btn btn-dark btn-lg" type="submit" value="Modifica profilo" style="font-size:15px;" /></td>
+                            <td><button class="btn btn-dark btn-lg" style="font-size:15px;">Modifica profilo</button></td>
                         </table>
                 </div>
                 <div>
-                    <h2>Prenotazioni in attesa</h2>
-                    <div id="container-own-annunci">
-                        
-                    </div>
+                    <h2>Prenotazioni ai tuoi annunci</h2>
+                    <div id="container-own-bookings"></div>
+                </div>
+                <div>
+                    <h2>I tuoi annunci passati</h2>
+                    <div id="container-own-announcements"></div>
+                </div>
+                <div>
+                    <h2>Annunci prenotati</h2>
+                    <div id="container-booked"></div>
                 </div>
             </div>
             <script>
-              
                 function loadUserInfo(){
                     fetch(`/api/v1/users/me`, {
                         method: 'GET',
@@ -113,51 +119,123 @@
                     .then( _json => {
                         let user = _json.user;
                         let annList = _json.announcements;
+
+                        // set user fields
+                        document.getElementById('name').innerText = user.name;
+                        document.getElementById('surname').innerText = user.surname;
+                        document.getElementById('username').innerText = user.username;
+                        document.getElementById('home').innerText = user.home;
+                        document.getElementById('birthday').innerText = user.birthday.toString();
+                        document.getElementById('description').innerText = user.description;
+
+                        // Prenotazioni ai tuoi annunci
+                        // showing a banner for each user who tried to book an announcement
+                        // retrieve list of announcements to accept/reject
                         $.each(annList, function(index, item){
                             for (let waitingUser of item.queuedReservations) {
-                                $("#container-own-annunci").append(
+                                $("#container-own-bookings").append(
                                     `<div class="card h-100 w-100 mb-2" id="${item._id}">
                                         <div class="card-body">
                                             <h2 class="card-title">Announcement: ${item.title}</h2>
                                             <p class="card-text">Waiting user: ${waitingUser.username}</p>
                                         </div>
-                                        <button onclick="acceptUser('${item._id}', '${waitingUser._id}')" >Accetta</button>
-                                </div>`);
+                                        <button onclick="handleUser('${item._id}', '${waitingUser._id}', true)" >Accetta</button>
+                                        <button onclick="handleUser('${item._id}', '${waitingUser._id}', false)" >Rifiuta</button>
+                                    </div>`);
                             }
                         });
+
+                        // I tuoi annunci passati
+                        // filtering announcements list to show only old ones
+                        $.each(annList.filter(item => {
+                            item.date ? item.date < Date.now() : true;  // item.date da implementare
+                        }), function(index, item){
+                            $("#container-own-bookings").append(
+                                `<div class="card h-100 w-100 mb-2">
+                                    <div class="card-body">
+                                        <table cellpadding="8">
+                                        <tr><td><h2 class="card-title">${item.author.username}</h2></td>
+                                        <td><h4>4 stelle</h4></td></tr>
+                                        </table>
+                                        <p class="card-subtitle" style="float: right;">tags: ${item.tags.join(' ')}</p>
+                                        <p class="card-subtitle"><b>${item.title}</b></p>
+                                        <p class="card-text">${item.description}</p>
+                                    </div>
+                                    <div class="card-footer">
+                                        <a href="#" class="btn btn-primary" onclick="attemptBooking('${item.id}')">Prenota</a>
+                                        <p class="card-subtitle" style="float: right;">Posti già prenotati: ${item.reservations.length}/${item.maxReservations}</p>
+                                    </div>
+                                </div>`);
+                        });
+
+                        // Annunci prenotati
+                        // retrieve and show announcement this user booked or is waiting for
+                        $.each(annList.filter(item => {
+                            item.date ? item.date < Date.now() : true;  // item.date da implementare
+                        }), function(index, item){
+                            $("#container-own-bookings").append(
+                                `<div class="card h-100 w-100 mb-2">
+                                    <div class="card-body">
+                                        <table cellpadding="8">
+                                        <tr><td><h2 class="card-title">${item.author.username}</h2></td>
+                                        <td><h4>4 stelle</h4></td></tr>
+                                        </table>
+                                        <p class="card-subtitle" style="float: right;">tags: ${item.tags.join(' ')}</p>
+                                        <p class="card-subtitle"><b>${item.title}</b></p>
+                                        <p class="card-text">${item.description}</p>
+                                    </div>
+                                    <div class="card-footer">
+                                        <a href="#" class="btn btn-primary" onclick="attemptBooking('${item.id}')">Prenota</a>
+                                        <p class="card-subtitle" style="float: right;">Posti già prenotati: ${item.reservations.length}/${item.maxReservations}</p>
+                                    </div>
+                                </div>`);
+                        });
+
                     })
                     .catch( err => {
                         console.log("Error occurred: " + err);
                     });
                 }
 
-                function acceptUser(annid, userid) {
-                    fetch(`/api/v1/announcements/${annid.toString()}`, {
-                        method: 'POST',
-                        mode: 'cors',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'x-access-token': `${sessionStorage.getItem('token')}`
-                        },
-                        body: JSON.stringify({
-                            userToConfirmId: userid
+                /**
+                 * function to accept or reject a user's booking (based on outcome param)
+                 */
+                function handleUser(annid, userid, outcome) {
+                    if (outcome){
+                        // user's booking is confirmed
+                        fetch(`/api/v1/announcements/${annid.toString()}`, {
+                            method: 'POST',
+                            mode: 'cors',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'x-access-token': `${sessionStorage.getItem('token')}`
+                            },
+                            body: JSON.stringify({
+                                userToConfirmId: userid
+                            })
                         })
-                    })
-                    .then(res => {
-                        if(!res.ok)
-                            console.log('error!');
-                        return res.json();
-                    })
-                    .then( _json => {
-                        // success! inform the user
-                        alert(_json.message);
-
+                        .then(res => {
+                            if(!res.ok)
+                                console.log('error!');
+                            return res.json();
+                        })
+                        .then( _json => {
+                            // success! inform the user
+                            alert('User request has been accepted!');
+    
+                            // remove the div
+                            document.getElementById(annid).remove();
+                        })
+                        .catch( err => {
+                            console.log("Error occurred: " + err);
+                        });
+                    } else {
+                        // user booking is rejected
+                        alert('User request has been rejected!');
+    
                         // remove the div
-                        document.getElementById(item._id).remove();
-                    })
-                    .catch( err => {
-                        console.log("Error occurred: " + err);
-                    });
+                        document.getElementById(annid).remove();
+                    }
                 }
             </script>
     </body>

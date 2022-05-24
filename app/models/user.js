@@ -4,10 +4,15 @@ var Schema = mongoose.Schema;
 // set up a mongoose model
 var schema = new Schema({ 
 	name: String,
+    surname: String,
     username: String,
+    phone: String,
+    birthday: Date,
+    home: String,
     email: String,
     password: String,
-    home: String
+    userpic: String,
+    announcements: []
 });
 
 schema.methods.comparePasswords = (psw1, psw2) => {

@@ -9,15 +9,21 @@ const tokenCheck = require('./tokenChecker');
  */
  router.post('', async (req, res) => {
     // check if user with the same username 
+    // tbi 
 
     // set new user's data
     let newUser = new User({
         name: req.body.name,
+        surname: req.body.surname,
+        phone: req.body.phone,
         username: req.body.username,
+        birthday: req.body.birthday,
+        userpic: req.body.userpic,
+        home: req.body.home,
         email: req.body.email,
         password: req.body.password,
-        home: req.body.home,
-    })
+        announcements: []
+    });
 
     try {
         newUser = await newUser.save()
