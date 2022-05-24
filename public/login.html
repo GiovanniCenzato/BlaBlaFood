@@ -63,17 +63,17 @@
             <div class="card col-6 mt-5 ml-5">
                 <div class="card-body p-4 p-md-5">
                     <h3 class="mb-4 pb-2 pb-md-0 mb-md-5">Registrazione</h3>
-                    <form>
+                    <form method="POST" action ="#" onsubmit="register()">
                         <div class="row">
                             <div class="col-md-6 mb-4"> 
                                 <div class="form-outline">
-                                    <input type="text" id="name-register" class="form-control form-control-lg" name="name-register" placeholder="Mario"/>
+                                    <input type="text" id="name-register" class="form-control form-control-lg" name="name-register" placeholder="Mario" required/>
                                     <label class="form-label" for="name-register">Nome</label>
                                 </div>       
                             </div>
                             <div class="col-md-6 mb-4">
                                 <div class="form-outline">
-                                    <input type="text" id="surname-register" class="form-control form-control-lg" name="surname-register" placeholder="Rossi"/>
+                                    <input type="text" id="surname-register" class="form-control form-control-lg" name="surname-register" placeholder="Rossi" required/>
                                     <label class="form-label" for="surname-register">Cognome</label>
                                 </div>
                             </div>
@@ -82,13 +82,13 @@
                         <div class="row">
                             <div class="col-md-6 mb-4 d-flex align-items-center">
                                 <div class="form-outline w-100">
-                                    <input type="text" class="form-control form-control-lg" id="username-register" name="username-register" placeholder="MarioRossi98" />
+                                    <input type="text" class="form-control form-control-lg" id="username-register" name="username-register" placeholder="MarioRossi98" required/>
                                     <label for="username-register" class="form-label">Username</label>
                                 </div>   
                             </div>
                             <div class="col-md-6 mb-4 d-flex align-items-center">
                                 <div class="form-outline w-100">
-                                    <input type="tel" class="form-control form-control-lg" id="phone-register" name="phone-register" placeholder="+39 *** " />
+                                    <input type="tel" class="form-control form-control-lg" id="phone-register" name="phone-register" placeholder="+39 *** " pattern="[0-9]{10,13}" required/>
                                     <label for="phone-register" class="form-label">Numero di telefono</label>
                                 </div>   
                             </div>
@@ -97,13 +97,13 @@
                         <div class="row">
                             <div class="col-md-6 mb-4 d-flex align-items-center">
                                 <div class="form-outline datepicker w-100">
-                                    <input type="date" class="form-control form-control-lg" id="birthday-register" name="birthday-register" placeholder="gg/mm/aaaa"/>
+                                    <input type="date" class="form-control form-control-lg" id="birthday-register" name="birthday-register" placeholder="gg/mm/aaaa"/ required>
                                     <label for="birthday-register" class="form-label">Data di nascita</label>
                                 </div>   
                             </div>
                             <div class="col-md-6 mb-4">
                                 <div class="form-outline">
-                                    <input type="text" id="location-register" class="form-control form-control-lg" name="location-register" placeholder="Roma"/>
+                                    <input type="text" id="location-register" class="form-control form-control-lg" name="location-register" placeholder="Roma" required/>
                                     <label class="form-label" for="location-register">Luogo di residenza</label>
                                 </div>
                             </div>
@@ -112,13 +112,13 @@
                         <div class="row">
                             <div class="col-md-6 mb-4 d-flex align-items-center">
                                 <div class="form-outline w-100">
-                                    <input type="email" class="form-control form-control-lg" id="email-register" name="email-register" placeholder="mdo@example.com"/>
+                                    <input type="email" class="form-control form-control-lg" id="email-register" name="email-register" placeholder="mdo@example.com" required/>
                                     <label for="email-register" class="form-label">Email</label>
                                 </div>   
                             </div>
                             <div class="col-md-6 mb-4 d-flex align-items-center">
                                 <div class="form-outline w-100">
-                                    <input type="email" class="form-control form-control-lg" id="email2-register" onblur="checkMail()" placeholder="mdo@example.com"/>
+                                    <input type="email" class="form-control form-control-lg" id="email2-register" onblur="checkMail()" placeholder="mdo@example.com" required/>
                                     <label for="email2-register" class="form-label">Conferma Email</label>
                                 </div>   
                             </div>
@@ -127,13 +127,13 @@
                         <div class="row">
                             <div class="col-md-6 mb-4"> 
                                 <div class="form-outline">
-                                    <input type="password-register" id="password-register" class="form-control form-control-lg" name="password-register" placeholder="password"/>
+                                    <input type="password" id="password-register" class="form-control form-control-lg" name="password-register" placeholder="password" required/>
                                     <label class="form-label" for="password-register">Password</label>
                                 </div>       
                             </div>
                             <div class="col-md-6 mb-4">
                                 <div class="form-outline">
-                                    <input type="password" id="password2-register" class="form-control form-control-lg" onblur="checkPass()" placeholder="password"/>
+                                    <input type="password" id="password2-register" class="form-control form-control-lg" onblur="checkPass()" placeholder="password" required/>
                                     <label class="form-label" for="password2-register">Conferma password</label>
                                 </div>
                             </div>
@@ -141,13 +141,13 @@
 
                         <div class="row" >
                             <div class="col-md-6 mb-4 d-flex text-center">
-                                <input style="width:100%;" class="btn btn-primary btn-lg" onclick="register()" value="Registrati" />
+                                <input style="width:100%;" class="btn btn-primary btn-lg" value="Registrati" />
                             </div>
                         </div>
 
                         <div class="form-check">
                             <label class="form-check-label">
-                                <input type="checkbox" class="form-check-input" value="">Dichiari di aver letto e accetti integralmente le nostre Condizioni generali di uso e vendita.
+                                <input type="checkbox" class="form-check-input" value="" required>Dichiari di aver letto e accetti integralmente le nostre Condizioni generali di uso e vendita.
                             </label>
                         </div>
 
@@ -160,7 +160,7 @@
             <div class="card col mt-5 mx-5 h-50">
                 <div class="card-body  p-md-5">
                     <h3 class="mb-4 pb-2 pb-md-0 mb-md-5">Login</h3>
-                    <form method="POST" action="localhost:3000/api/v1/auth">
+                    <form method="POST" action="#" onsubmit="login()">
                     <div class="row">
                         <div class="form-outline">
                             <input type="email" id="email-login" class="form-control form-control-lg w-100" name="email-login" placeholder="mdo@example.com"/>
@@ -177,7 +177,7 @@
 
                     <div class="row mt-4">
                         <div class="col-md-6 mb-4 d-flex text-center">
-                            <input style="width:100%;" class="btn btn-primary btn-lg" onclick="login()" value="Accedi" />
+                            <input style="width:100%;" class="btn btn-primary btn-lg" value="Accedi" />
                         </div>
                         <div class="col-md-6 mb-4 d-flex text-center">
                             <a style="width:100%;" href="#"> Ho dimenticato la password </a>
