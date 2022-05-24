@@ -24,10 +24,14 @@ router.post('', tokenCheck, async (req, res, next) => {
     let newAnn = new Announcement({
         title: req.body.title,
         description: req.body.description,
+        address: req.body.address,
+        city: req.body.city,
+        date: req.body.date, 
         tags: req.body.tags,
+        price: req.body.price,
         authorId: _user._id,
-        reservations: [],
         maxReservations: req.body.maxReservations,
+        reservations: [],
         queuedReservations: []
     });
 
