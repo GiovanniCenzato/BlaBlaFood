@@ -7,7 +7,7 @@
  * @param {Object} announcement The annoouncement to visualize
  * @returns An HTML string to display
  */
-export const visualizeAnnouncement = (announcement, isPast) => {
+const visualizeAnnouncement = (announcement, isPast) => {
     // tbi: isPast is used to choose the color of the banner and some other stuff, to indicate if the 
     // announcement is outdated, is pending, is full etc.
     let temp = 
@@ -34,7 +34,7 @@ export const visualizeAnnouncement = (announcement, isPast) => {
  * @param {Object} announcement Announcement for which user is waiting for approval
  * @returns An HTML string to display 
  */
-export const visualizeUserConfirmationBanner = (waitingUser, announcement) => {
+const visualizeUserConfirmationBanner = (waitingUser, announcement) => {
     let temp = 
     `<div class="card h-100 w-100 mb-2" id="${announcement._id}">
         <div class="card-body">
