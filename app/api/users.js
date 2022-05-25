@@ -100,4 +100,41 @@ router.get('/me', tokenCheck, async (req, res, next) => {
     }
 })
 
+router.put('/me', tokenCheck, async (req, res, next) => {
+    // check for token 
+    if (!req.loggedin) {
+        return res.status(403).json({
+            message: 'Error, user not logged in'
+        });
+    }
+    
+    try {
+        
+        // find user with email from request and update it
+        await User.findOneAndUpdate({
+            email: req.loggedin.email
+        }, {
+            name: req.body.name,
+            surname: req.body.surname,
+            username: req.body.username,
+            home: req.body.home,
+            birthday: req.body.birthday,
+            description: req.body.description
+        });
+
+        // send response
+        console.log(`Successfully updated user ${req.body.username}!`);
+        res.status(201).json({
+            message: `Successfully updated user ${req.body.username}!`
+        });
+
+    } catch (e) {
+        console.log(`Error updating user ${req.body.username}!`);
+        res.status(403).json({
+            message: `Error updating user ${req.body.username}!`
+        });
+    }
+
+});
+
 module.exports = router;
