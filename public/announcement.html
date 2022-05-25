@@ -17,7 +17,7 @@
         <script>
             $(document).ready(function(){
                 // set content of login/logout button
-                if (loggedin.token == null) {
+                if (sessionStorage.getItem('token') == null) {
                     document.getElementById('profile_btn').setAttribute('href', 'login.html');
                     document.getElementById('login_logout_btn').innerText = 'Login';
                     document.getElementById('login_logout_btn').setAttribute('onclick', 'window.location.href = "login.html"')
@@ -146,13 +146,13 @@
                             </p>
                         </div>
                         <div  class="pt-5">
-                            <input class="form-check-input" type="checkbox" value="" id="yesFree">
+                            <input class="form-check-input" type="radio" value="" id="yesFree" onclick="document.getElementById('price').disabled = false">
                             <label class="form-check-label" for="yesFree">
                                 SI
                             </label>
                         </div>
                         <div class="ml-5 pt-5" >
-                            <input class="form-check-input" type="checkbox" value="" id="noFree">
+                            <input class="form-check-input" type="radio" value="" id="noFree" onclick="document.getElementById('price').disabled = true">
                             <label class="form-check-label" for="noFree">
                                 NO
                             </label>
