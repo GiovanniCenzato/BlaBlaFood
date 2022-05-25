@@ -87,7 +87,7 @@
                             <td id="username">Username</td>
                             <td id="birthday">05/08/1998</td>
                         </tr>
-                            <td><button class="btn btn-dark btn-lg" style="font-size:15px;">Modifica profilo</button></td>
+                            <td><button class="btn btn-dark btn-lg" style="font-size:15px;" id="edit-profile" onclick="editProfile(true)">Modifica profilo</button></td>
                         </table>
                 </div>
                 <div>
@@ -104,6 +104,7 @@
                 </div>
             </div>
             <script>
+
                 function loadUserInfo(){
                     fetch(`/api/v1/users/me`, {
                         method: 'GET',
@@ -111,11 +112,7 @@
                             'x-access-token': `${sessionStorage.getItem('token')}`
                         }
                     })
-                    .then(res => {
-                        if(!res.ok)
-                            console.log('error!');
-                        return res.json();
-                    })
+                    .then(res => {if(!res.ok) {console.log('error!'); } return res.json(); })
                     .then( _json => {
                         let user = _json.user;
                         let annList = _json.announcements;
@@ -214,11 +211,7 @@
                                 userToConfirmId: userid
                             })
                         })
-                        .then(res => {
-                            if(!res.ok)
-                                console.log('error!');
-                            return res.json();
-                        })
+                        .then(res => {if(!res.ok) {console.log('error!'); } return res.json(); })
                         .then( _json => {
                             // success! inform the user
                             alert('User request has been accepted!');
@@ -236,6 +229,88 @@
                         // remove the div
                         document.getElementById(annid).remove();
                     }
+                }
+
+                function editProfile(_switch) {
+                    if (_switch) {
+                        // save current state user
+                        let old_user = {};
+
+                        old_user.name = document.getElementById('name').innerText;
+                        old_user.surname = document.getElementById('surname').innerText;
+                        old_user.username = document.getElementById('username').innerText;
+                        old_user.home = document.getElementById('home').innerText;
+                        old_user.birthday = document.getElementById('birthday').innerText;
+                        old_user.description = document.getElementById('description').innerText;
+                        sessionStorage.setItem('old_user', JSON.stringify(old_user));
+                        
+                        // create inputs
+                        console.log(old_user);
+                        document.getElementById('name').innerHTML = `<input type="text" placeholder="${old_user.name}" id="name-edit" />`;
+                        document.getElementById('surname').innerHTML = `<input type="text" placeholder="${old_user.surname}" id="surname-edit" />`;
+                        document.getElementById('username').innerHTML = `<input type="text" placeholder="${old_user.username}" id="username-edit" />`;
+                        document.getElementById('home').innerHTML = `<input type="text" placeholder="${old_user.home}" id="home-edit" />`;
+                        document.getElementById('birthday').innerHTML = `<input type="text" placeholder="${old_user.birthday}" id="birthday-edit" />`;
+                        document.getElementById('description').innerHTML = `<input type="text" placeholder="${old_user.description}" id="description-edit" />`;
+
+                        // button to save
+                        document.getElementById('edit-profile').setAttribute('value', 'Salva modifiche');
+                        document.getElementById('edit-profile').setAttribute('onclick', 'editProfile(false)');
+
+                    } else {
+                        // save edits, update model and close 
+                        let user = {};
+                        user.name = document.getElementById('name-edit').value=='' ? document.getElementById('name-edit').placeholder : document.getElementById('name-edit').value;
+                        user.surname = document.getElementById('surname-edit').value=='' ? document.getElementById('surname-edit').placeholder : document.getElementById('surname-edit').value;
+                        user.username = document.getElementById('username-edit').value=='' ? document.getElementById('username-edit').placeholder : document.getElementById('username-edit').value;
+                        user.home = document.getElementById('home-edit').value=='' ? document.getElementById('home-edit').placeholder : document.getElementById('home-edit').value;
+                        user.birthday = document.getElementById('birthday-edit').value=='' ? document.getElementById('birthday-edit').placeholder : document.getElementById('birthday-edit').value;
+                        user.description = document.getElementById('description-edit').value=='' ? document.getElementById('description-edit').placeholder : document.getElementById('description-edit').value;
+
+                        // send request to api
+                        fetch(`/api/v1/users/me`, {
+                            method: 'PUT',
+                            mode: 'cors',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'x-access-token': `${sessionStorage.getItem('token')}`
+                            },
+                            body: JSON.stringify({
+                                user: user
+                            })
+                        })
+                        .then(res => {if(!res.ok) {console.log('error!'); } return res.json(); })
+                        .then( _json => {
+                            // success! save the updated fields
+                            document.getElementById('name').innerHTML = `${user.name}`;
+                            document.getElementById('surname').innerHTML = `${user.surname}`;
+                            document.getElementById('username').innerHTML = `${user.username}`;
+                            document.getElementById('home').innerHTML = `${user.home}`;
+                            document.getElementById('birthday').innerHTML = `${user.birthday}`;
+                            document.getElementById('description').innerHTML = `${user.description}`;
+                             
+                            // button to save
+                            document.getElementById('edit-profile').setAttribute('value', 'Modifica profilo');
+                            document.getElementById('edit-profile').setAttribute('onclick', 'editProfile(true)');
+
+                        })
+                        .catch( err => {
+                            console.log("Error occurred: " + err);
+                            let old_user = JSON.parse(sessionStorage.getItem('old_user'));
+                            document.getElementById('name').innerHTML = `${old_user.name}`;
+                            document.getElementById('surname').innerHTML = `${old_user.surname}`;
+                            document.getElementById('username').innerHTML = `${old_user.username}`;
+                            document.getElementById('home').innerHTML = `${old_user.home}`;
+                            document.getElementById('birthday').innerHTML = `${old_user.birthday}`;
+                            document.getElementById('description').innerHTML = `${old_user.description}`;
+                             
+                            // button to save
+                            document.getElementById('edit-profile').setAttribute('value', 'Modifica profilo');
+                            document.getElementById('edit-profile').setAttribute('onclick', 'editProfile(true)');
+                        });
+                    sessionStorage.removeItem('old_user');
+                    }
+                    
                 }
             </script>
     </body>
