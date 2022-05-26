@@ -118,9 +118,13 @@ router.post('/:id/reviews', tokenCheck, async (req, res, next) => {
     let _user = await User.findOne({
         _id: userid
     });
-    
-    // let reviewerId = req.loggedin.id;                       // id of the user executing the operation
-    let review = req.body.review;                           // review to be added
+
+    let review = {};
+    review.title = req.body.title;
+    review.description = req.body.description;
+    review.announcementId = req.body.announcementId;
+    review.authorId = req.body.authorId;
+    review.stars = req.body.stars;
 
     try {
         // push new review 
@@ -134,7 +138,6 @@ router.post('/:id/reviews', tokenCheck, async (req, res, next) => {
         return res.status(200).json({
             message: `User review added!`
         });
-    
     } catch (e) {
         console.log(`Error: ${e}`);
 
