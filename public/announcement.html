@@ -66,19 +66,19 @@
                     </figure>
                     <!-- Riga 2-->
                     <div class="mb-3">
-                        <label for="piattoDaCucinare" class="form-label">Titolo annuncio</label>
+                        <label for="title" class="form-label">Titolo annuncio</label>
                         <input type="text" class="form-control" id="title">
                     </div>
                     <!-- Riga 3-->
                     <div class="mb-2">
-                        <label for="descrizione" class="form-label">Descrizione</label>
+                        <label for="description" class="form-label">Descrizione</label>
                         <textarea class="form-control" id="description" rows="3" placeholder="breve descrizione del piatto, delle modalità di consumazione con relativo orario e se ti servisse qualche ingrediente"></textarea>
                     </div>
                     <!-- Riga 4-->
                     <form class="row g-3">
                         <div class="col-auto">
-                            <label for="examplePlaceList" class="form-label">Indirizzo</label>
-                                <input class="form-control" list="datalistOptions" id="exampleDataList" placeholder="Type to search location...">
+                            <label for="place" class="form-label">Indirizzo</label>
+                                <input class="form-control" list="datalistOptions" id="place" placeholder="Type to search location...">
                                 <datalist id="datalistOptions">
                                 <option value="via della Croce 11">
                                 <option value="via Marighetto 2">
@@ -88,57 +88,60 @@
                                 </datalist>
                         </div> 
                         <div class="pb-3 ">
-                            <label for="citta" class="form-label">Città</label>
-                            <input type="city" class="form-control" id="citta" placeholder="Roma">
+                            <label for="city" class="form-label">Città</label>
+                            <input type="text" class="form-control" id="city" placeholder="Roma">
                         </div>
                         <div class="ml-2">
-                            <label for="dataConsumazione" class="form-label">Data</label>
-                            <input type="piatto" class="form-control" id="dataConsumazione" placeholder="gg/mm/aaaa">
+                            <label for="date" class="form-label">Data</label>
+                            <input type="date" class="form-control" id="date" placeholder="gg/mm/aaaa">
                         </div>
                         <!-- Riga 5-->
                         <div class="col-auto">
-                            <label for="oraConsumazione" class="form-label">Orario</label>
-                            <input type="ora" class="form-control" id="oraConsumazione" placeholder="21:30">
+                            <label for="time" class="form-label">Orario</label>
+                            <input type="time" class="form-control" id="time" placeholder="21:30">
                         </div>
                         
-                        <div >
-                            <label for="tag" class="form-label">Tags</label>
+                        <div>
+                            <label for="tags" class="form-label">Tags</label>
                             <input type="text" class="form-control" id="tags" placeholder="#vegano #tofu ... (separa i tag con uno spazio)">
                         </div>
 
-                        <div>
+                        <div class="ml-4">
                             <label for="maxReservations" class="form-label">Max reservations</label>
                             <input type="number" class="form-control" id="maxReservations" >
                         </div>
 
                         <div class="ml-2">
-                            <label for="exampleTypeList" class="form-label">Tipologia</label>
-                                <input class="form-control" list="datalisType" id="exampleDataList" placeholder="more info">
+                            <label for="tipology" class="form-label">Tipologia</label>
+                                <input class="form-control" list="datalisType" id="tipology" placeholder="more info">
                                 <datalist id="datalisType">
                                 <option value="vegano">
                                 <option value="vegetariano">
                                 <option value="messicano"> </option>                
                                 </datalist>
                         </div>
+
+                        <div class="col-auto pt-3"></div>  <!-- Spazio intermedio-->
+                        
                         <!-- Riga 6-->
                         <div class="col-auto pt-3">
                             <p>
                                 Presta attenzione quando compili questi campi:
                             </p>
-                        </div>
-                        <div  class="pt-5">
-                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                            <label class="form-check-label" for="flexCheckDefault">
-                                SENZA glutine
-                            </label>
-                        </div>
-                        <div class="ml-5 pt-5" >
-                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                            <label class="form-check-label" for="flexCheckDefault">
+                            <div  class="pt-2 ml-4">
+                                <input class="form-check-input" type="checkbox" value="" id="glutenfree">
+                                <label class="form-check-label" for="glutenfree">
+                                    SENZA glutine
+                                </label>
+                            </div>
+
+                        <div class="pt-2 ml-4" >
+                            <input class="form-check-input" type="checkbox" value="" id="lactosefree">
+                            <label class="form-check-label" for="lactosefree">
                                 SENZA lattosio
                             </label>
                         </div>
-
+                    </div>
                         <!-- Riga 7-->
                         <div class="col-auto pt-3">
                             <p>
@@ -146,19 +149,19 @@
                             </p>
                         </div>
                         <div  class="pt-5">
-                            <input class="form-check-input" type="radio" value="" id="yesFree" onclick="document.getElementById('price').disabled = false">
+                            <input class="form-check-input" type="radio" name="radiogroup1" value="" id="yesFree" onclick="document.getElementById('price').disabled = true" checked>
                             <label class="form-check-label" for="yesFree">
                                 SI
                             </label>
                         </div>
                         <div class="ml-5 pt-5" >
-                            <input class="form-check-input" type="radio" value="" id="noFree" onclick="document.getElementById('price').disabled = true">
+                            <input class="form-check-input" type="radio" name="radiogroup1" value="" id="noFree" onclick="document.getElementById('price').disabled = false">
                             <label class="form-check-label" for="noFree">
                                 NO
                             </label>
                         </div>
                         <div class="ml-3 pt-5" >
-                            <input type="price" style="width:120px" class="form-control" id="price" placeholder="scrivi prezzo">
+                            <input type="price" style="width:120px" class="form-control" id="price" placeholder="Scrivi prezzo" disabled>
                         </div>
 
                     </form>
@@ -179,33 +182,57 @@
         async function publishAnnouncement() {
             let tags = document.getElementById('tags').value;
             tags = tags.split(' ');
+            let title = document.getElementById('title').value;
+            let description = document.getElementById('description').value;
+            let maxReservations = document.getElementById('maxReservations').value;
+            let place = document.getElementById('place').value;
+            let city = document.getElementById('city').value;
+            let date = document.getElementById('date').value;
+            let time = document.getElementById('time').value;
+            let glutenfree = document.getElementById('glutenfree').checked;
+            let lactosefree = document.getElementById('lactosefree').checked;
+            let price = document.getElementById('price').value;
 
-            fetch(`/api/v1/announcements`, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-access-token': `${sessionStorage.getItem('token')}`
-                    },
-                    body: JSON.stringify({
-                        title:     document.getElementById('title').value,
-                        description:     document.getElementById('description').value,
-                        tags: tags,
-                        maxReservations: document.getElementById('maxReservations').value,
-                    })
-            }).then(res => {
-                console.log(res);
-                if (!res.ok)
-                    console.log('Error sending request');
-                return res.json();
-            }).then(_json => {
-                // redirect to login for simplicity
-                console.log(_json);
-                
-                alert(_json.message);
-                // clear fields...
-            });
-        }
+            if(document.getElementById('yesFree').checked){price="0.0"}
+
+            if(title === '' || description === '' || city === '' || place === '' || date === '' || time === '' || price === '' || maxReservations === ''){        
+                alert("Completare tutti i campi del form prima di registrare l'annuncio");
+            }
+            else {
+                fetch(`/api/v1/announcements`, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-access-token': `${sessionStorage.getItem('token')}`
+                        },
+                        body: JSON.stringify({
+                            title:     title,
+                            description:     description,
+                            tags: tags,
+                            tipology: document.getElementById('tipology').value,
+                            maxReservations: maxReservations,
+                            place: place,
+                            city: city,
+                            date: date,
+                            time: time,
+                            glutenfree: glutenfree,
+                            lactosefree: lactosefree,
+                            price: price,
+                        })
+                }).then(res => {
+                    console.log(res);
+                    if (!res.ok)
+                        console.log('Error sending request');
+                    return res.json();
+                }).then(_json => {
+                    // redirect to login for simplicity
+                    console.log(_json);
+                    
+                    alert(_json.message);
+                    // clear fields...
+                });
+            }
+    }
     </script>
 </html>
-
