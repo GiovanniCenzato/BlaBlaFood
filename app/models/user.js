@@ -12,11 +12,12 @@ var schema = new Schema({
     email: String,
     password: String,
     userpic: String,
-    announcements: []
+    announcements: [],
+    reviews: []
 });
 
-schema.methods.comparePasswords = (psw1, psw2) => {
-    return psw1==psw2;
+schema.methods.comparePasswords = (psw) => {
+    return psw==User.password;
 }
 
 module.exports = mongoose.model('User', schema);

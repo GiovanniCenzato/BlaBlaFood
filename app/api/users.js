@@ -66,6 +66,7 @@ router.get('/me', tokenCheck, async (req, res, next) => {
 
 /**
  * Retrieve all users
+ * TODO should not return psw
  */
  router.get('', async (req, res) => {
      
@@ -100,4 +101,73 @@ router.get('/me', tokenCheck, async (req, res, next) => {
     }
 })
 
+/**
+ * Post a new review to user
+ */
+router.post('/:id/reviews', tokenCheck, async (req, res, next) => {
+    // check for token 
+    if (!req.loggedin) {
+        return res.status(403).json({
+            message: 'Error, user not logged in'
+        });
+    }
+    
+    let userid = req.params.id;                              // id of the user to be reviews
+    
+    // get user with email from request
+    let _user = await User.findOne({
+        _id: userid
+    });
+    
+    // let reviewerId = req.loggedin.id;                       // id of the user executing the operation
+    let review = req.body.review;                           // review to be added
+
+    try {
+        // push new review 
+        _user.reviews.push(review);
+
+        // save update
+        _user = await _user.save();
+    
+        // response of successful operation
+        console.log(`User review added!`);
+        return res.status(200).json({
+            message: `User review added!`
+        });
+    
+    } catch (e) {
+        console.log(`Error: ${e}`);
+
+        return res.status(403).json({
+            message: `Error adding user review`
+        });
+    }
+});
+
+
+/**
+ * Retrieve one specific user
+ * TODO should not return psw
+ */
+ router.get('/:id', async (req, res) => {
+    // get user id
+    let id = req.params.id;
+
+    // retrieve specific announcement (if any)
+    try {
+        let user = await User.findById(id);
+
+        console.log(`Found user with id ${id}`);
+
+        // send back its data
+        return res.status(201).json(user);
+
+    } catch (e) {
+        console.log(`Error: ${e}`);
+
+        return res.status(403).json({
+            message: `error retrieving user with id ${id}`
+        });
+    }
+});
 module.exports = router;
