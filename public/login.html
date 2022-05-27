@@ -218,7 +218,7 @@
             var mailvalue = document.getElementById('email-login').value;
             var passwordvalue = document.getElementById('password-login').value;
             if(!(mailvalue === "" || passwordvalue === "")){
-            fetch(`http://localhost:3000/api/v1/auth/login`, {
+            fetch(`/api/v2/auth/login`, {
                     method: 'POST',
                     mode: 'cors',
                     headers: {
@@ -255,7 +255,7 @@
                 alert("Completare tutti i campi nel form di registrazione!");
             }
             else if (checkPass() && checkMail()){
-                fetch(`http://localhost:3000/api/v1/users`, {
+                fetch(`/api/v2/users`, {
                         method: 'POST',
                         mode: 'cors',
                         headers: {

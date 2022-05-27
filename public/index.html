@@ -69,7 +69,7 @@
                         <div class="form-group" style="padding: 5px">
                             <label for="filter">Search:</label>
                             <input type="text" class="form-control" id="filter" name="filter"> 
-                            <button class="btn btn-primary" type="submit" onclick="loadAnnouncementsList()">Search</button>
+                            <button class="btn btn-primary" type="button" onclick="loadAnnouncementsList()">Search</button>
                             <div class="form-check-inline">
                                 <label class="form-check-label">
                                     <input type="checkbox" class="form-check-input" id="filter-vegan" name="vegan" value="vegan"> Vegan
@@ -120,7 +120,7 @@
             // fucntion to show modal with user details to post a review
             function userDetails(userid) {
                 // get user from the backend
-                fetch(`/api/v1/users/${userid}`)
+                fetch(`/api/v2/users/${userid}`)
                 .then(res => {
                     if (!res.ok)
                         console.log('Error sending request');
@@ -159,7 +159,7 @@
                 if (sessionStorage.getItem('token') == null || sessionStorage.getItem('token') == undefined) {
                     window.location.href = 'login.html';
                 } else {
-                    fetch(`/api/v1/announcements/${announcementId}`, {
+                    fetch(`/api/v2/announcements/${announcementId}`, {
                         method: 'POST',
                         mode: 'cors',
                         headers: {
@@ -197,7 +197,7 @@
                 let vegetarian = document.getElementById('filter-vegetarian').checked;
                 let glutenfree = document.getElementById('filter-gluten-free').checked;
 
-                fetch(`/api/v1/announcements/?filter=${filter}&vegan=${vegan}&vegetarian=${vegetarian}&glutenfree=${glutenfree}`)
+                fetch(`/api/v2/announcements/?filter=${filter}&vegan=${vegan}&vegetarian=${vegetarian}&glutenfree=${glutenfree}`)
                 .then( res => {
                     if (!res.ok) {
                         console.log('Error fetching');
@@ -213,8 +213,11 @@
                                 `<div class="card h-100 w-100 mb-2">
                                     <div class="card-body">
                                         <table cellpadding="8">
-                                        <tr><td><button onclick="userDetails('${item.author._id}')" class="card-title">${item.author.username}</button></td>
-                                        <td><h4>4 stelle</h4></td></tr>
+                                        <tr>
+                                            <td><img src="${item.userpic}" width="100px" class="rounded-circle"></td>
+                                            <td><button onclick="userDetails('${item.author._id}')" class="card-title">${item.author.username}</button></td>
+                                            <td><h4>4 stelle</h4></td>
+                                        </tr>
                                         </table>
                                         <p class="card-subtitle" style="float: right;">tags: ${item.tags.join(' ')}</p>
                                         <p class="card-subtitle"><b>${item.title}</b></p>

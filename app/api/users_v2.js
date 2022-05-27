@@ -25,7 +25,7 @@ const tokenCheck = require('./tokenChecker');
         phone: req.body.phone,
         username: req.body.username,
         birthday: req.body.birthday,
-        userpic: req.body.userpic,
+        userpic: req.body.userpic!='' ? req.body.userpic : 'https://cdn-icons-png.flaticon.com/512/64/64572.png',
         home: req.body.home,
         email: req.body.email,
         password: psw,

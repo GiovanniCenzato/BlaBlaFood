@@ -169,7 +169,7 @@
                     <!-- Riga 7-->
                     <div class="row mt-5" >
                         <div class="col-md-6 mb-4 d-flex text-center">
-                            <input class="btn btn-dark btn-lg" onclick="publishAnnouncement()" value="Pubblica annuncio" />
+                            <input class="btn btn-dark btn-lg" type="button" onclick="publishAnnouncement()" value="Pubblica annuncio" />
                         </div>
                     </div>
 
@@ -200,7 +200,7 @@
                 alert("Completare tutti i campi del form prima di registrare l'annuncio");
             }
             else {
-                fetch(`/api/v1/announcements`, {
+                fetch(`/api/v2/announcements`, {
                         method: 'POST',
                         mode: 'cors',
                         headers: {

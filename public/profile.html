@@ -105,7 +105,7 @@
             </div>
             <script>
                 function loadUserInfo(){
-                    fetch(`/api/v1/users/me`, {
+                    fetch(`/api/v2/users/me`, {
                         method: 'GET',
                         headers: {
                             'x-access-token': `${sessionStorage.getItem('token')}`
@@ -203,7 +203,7 @@
                 function handleUser(annid, userid, outcome) {
                     if (outcome){
                         // user's booking is confirmed
-                        fetch(`/api/v1/announcements/${annid.toString()}`, {
+                        fetch(`/api/v2/announcements/${annid.toString()}`, {
                             method: 'POST',
                             mode: 'cors',
                             headers: {
