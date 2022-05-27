@@ -97,7 +97,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-4 d-flex align-items-center">
                                 <div class="form-outline datepicker w-100">
-                                    <input type="date" class="form-control form-control-lg" id="birthday-register" name="birthday-register" placeholder="gg/mm/aaaa"/ required>
+                                    <input type="date" class="form-control form-control-lg" id="birthday-register" name="birthday-register" placeholder="gg/mm/aaaa" required>
                                     <label for="birthday-register" class="form-label">Data di nascita</label>
                                 </div>   
                             </div>
@@ -141,7 +141,7 @@
 
                         <div class="row" >
                             <div class="col-md-6 mb-4 d-flex text-center">
-                                <input style="width:100%;" class="btn btn-primary btn-lg" value="Registrati" />
+                                <input style="width:100%;" onclick="register()" type="button" class="btn btn-primary btn-lg" value="Registrati" />
                             </div>
                         </div>
 
@@ -160,7 +160,7 @@
             <div class="card col mt-5 mx-5 h-50">
                 <div class="card-body  p-md-5">
                     <h3 class="mb-4 pb-2 pb-md-0 mb-md-5">Login</h3>
-                    <form method="POST" action="#" onsubmit="login()">
+                    <form>
                     <div class="row">
                         <div class="form-outline">
                             <input type="email" id="email-login" class="form-control form-control-lg w-100" name="email-login" placeholder="mdo@example.com"/>
@@ -177,7 +177,7 @@
 
                     <div class="row mt-4">
                         <div class="col-md-6 mb-4 d-flex text-center">
-                            <input style="width:100%;" class="btn btn-primary btn-lg" value="Accedi" />
+                            <input style="width:100%;" onclick="login()" type="button" class="btn btn-primary btn-lg" value="Accedi" />
                         </div>
                         <div class="col-md-6 mb-4 d-flex text-center">
                             <a style="width:100%;" href="#"> Ho dimenticato la password </a>
@@ -213,11 +213,49 @@
             }
             return true;
         }
-        
+
+        async function login(){
+            var mailvalue = document.getElementById('email-login').value;
+            var passwordvalue = document.getElementById('password-login').value;
+            if(!(mailvalue === "" || passwordvalue === "")){
+            fetch(`http://localhost:3000/api/v1/auth/login`, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: document.getElementById('email-login').value,
+                        password: document.getElementById('password-login').value
+                    })
+            }).then(res => {
+                if (!res.ok)
+                    console.log('Error sending request');
+                return res.json();
+            }).then(_json => {
+                // save the token in sessionStorage
+                sessionStorage.setItem('loggedin', _json.token);
+                console.log('token saved to session storage');
+                window.location.href = 'index.html';
+
+            });
+            } else {
+                alert('Compilare tutti i campi!');
+            }
+        }
 
         async function register() {
-            if (checkPass() && checkMail()){
-                fetch(`/api/v1/users`, {
+            var checkName = document.getElementById('name-register').value;
+            var checkSurname = document.getElementById('surname-register').value;
+            var checkUsername = document.getElementById('username-register').value;
+            var checkPhone = document.getElementById('phone-register').value;
+            var checkBirthday = document.getElementById('birthday-register').value;
+            var checkLocation = document.getElementById('location-register').value;
+            if(checkName === "" || checkSurname === "" || checkUsername === "" || checkPhone === "" || checkPhone.length < 10 || checkPhone.length > 13 || checkBirthday === "" || checkLocation === ""){
+                alert("Completare tutti i campi nel form di registrazione!");
+            }
+            else if (checkPass() && checkMail()){
+                fetch(`http://localhost:3000/api/v1/users`, {
                         method: 'POST',
                         mode: 'cors',
                         headers: {
@@ -245,31 +283,6 @@
     
                 });
             }
-        }
-
-        async function login(){
-            fetch(`/api/v1/auth/login`, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        email: document.getElementById('email-login').value,
-                        password: document.getElementById('password-login').value
-                    })
-            }).then(res => {
-                if (!res.ok)
-                    console.log('Error sending request');
-                return res.json();
-            }).then(_json => {
-                // save the token in sessionStorage
-                sessionStorage.setItem('token',_json.token);
-                sessionStorage.setItem('username',_json.username);
-                console.log('token saved to session storage');
-                window.location.href = 'index.html';
-
-            });
         }
 
     </script>
