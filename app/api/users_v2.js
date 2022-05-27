@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user')
+const bcrypt = require('bcrypt');
 const Announcement = require('../models/announcement')
 const tokenCheck = require('./tokenChecker');
 
@@ -14,6 +15,9 @@ const tokenCheck = require('./tokenChecker');
     // check if user with the same username 
     // tbi 
 
+    let psw = bcrypt.hashSync(req.body.password, 5);
+    console.log(psw);
+
     // set new user's data
     let newUser = new User({
         name: req.body.name,
@@ -24,7 +28,7 @@ const tokenCheck = require('./tokenChecker');
         userpic: req.body.userpic,
         home: req.body.home,
         email: req.body.email,
-        password: req.body.password,
+        password: psw,
         announcements: []
     });
 

@@ -4,6 +4,7 @@ const cors = require('cors');
 const users = require('./api/users');
 const announcements = require('./api/announcements.js');
 const users_v2 = require('./api/users_v2');
+const auth_v2 = require('./api/auth_v2');
 const announcements_v2 = require('./api/announcements_v2');
 const auth = require('./api/auth');
 
@@ -28,5 +29,6 @@ app.use('/api/v1/users', users);
 
 app.use('/api/v2/announcements', announcements_v2);
 app.use('/api/v2/users', users_v2);
+app.use('/api/v2/auth', auth_v2);
 
 module.exports = app;
