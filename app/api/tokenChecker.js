@@ -13,10 +13,6 @@ const jwt = require('jsonwebtoken');
     // empty token
     if (!token) {
         return res.status(403).redirect('/');
-        // return res.status(401).json({
-        //     message: 'No token provided',
-        //     success: false
-        // })
     }
 
     // validation
@@ -24,15 +20,11 @@ const jwt = require('jsonwebtoken');
         // token is not valid
         if (error) {
             return res.status(403).redirect('/');
-
-            // return res.status(403).json({
-            //     message: 'Token validation failed',
-            //     success: false
-            // });
         }
 
         // token is valid, set in request and move on
         req.loggedin = decodedToken;
+        req.username = req.body.username;       // useless?
         console.log('token okay, moving on');
         next();
     })

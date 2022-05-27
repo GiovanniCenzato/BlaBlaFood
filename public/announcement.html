@@ -15,6 +15,7 @@
     <body>
 
         <script>
+            // TODO: tendenzialmente inutile, un utente puo creare un annuncio solo se loggato quindi non ha senso condizionare la visualizzazione della navbar
             $(document).ready(function(){
                 // set content of login/logout button
                 if (sessionStorage.getItem('token') == null) {
@@ -26,7 +27,7 @@
                     document.getElementById('profile_btn').setAttribute('href', 'profile.html');
                     document.getElementById('login_logout_btn').innerText = 'Logout';
                     document.getElementById('login_logout_btn').setAttribute('onclick', 'logout()')
-                    document.getElementById('login_logout_dropdown').innerText = `Ciao, user`;
+                    document.getElementById('login_logout_dropdown').innerText = `Ciao, ${sessionStorage.getItem('username')}`;
                 }
             });
         </script>

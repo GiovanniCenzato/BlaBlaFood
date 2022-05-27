@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+const bcrypt = require('bcrypt');
 
 // set up a mongoose model
 var schema = new Schema({ 
@@ -12,11 +13,12 @@ var schema = new Schema({
     email: String,
     password: String,
     userpic: String,
-    announcements: []
+    announcements: [],
+    reviews: []
 });
 
-schema.methods.comparePasswords = (psw1, psw2) => {
-    return psw1==psw2;
+schema.methods.comparePasswords = (bodypsw, userpsw) => {
+    return bcrypt.compareSync(bodypsw, userpsw);
 }
 
 module.exports = mongoose.model('User', schema);
