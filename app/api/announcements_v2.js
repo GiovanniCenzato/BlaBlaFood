@@ -5,7 +5,7 @@ const User = require('../models/user.js');
 const tokenCheck = require('./tokenChecker');
 
 /**
- * Create a new announcement
+ * Create a new announcement 
  */
 router.post('', tokenCheck, async (req, res, next) => {
     // check for token 

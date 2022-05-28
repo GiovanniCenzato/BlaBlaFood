@@ -12,11 +12,7 @@ const tokenCheck = require('./tokenChecker');
      let status;
      let message;
 
-    // check if user with the same username 
-    // tbi 
-
     let psw = bcrypt.hashSync(req.body.password, 5);
-    console.log(psw);
 
     // set new user's data
     let newUser = new User({

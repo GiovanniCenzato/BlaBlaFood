@@ -205,7 +205,7 @@
                     return res.json();
                 })
                 .then( _json => {
-                    $.each(_json, function(index, item){
+                    $.each(_json.announcementsList, function(index, item){
                         
                         if(item.reservations.length < item.maxReservations && !(item.username === item.title)){
                             
