@@ -4,9 +4,12 @@
   "description": "A webapp to share food and moments",
   "main": "index.js",
   "scripts": {
+    "test": "jest",
+    "test_local": "jest --setupFiles dotenv/config",
     "start": "node index.js",
-    "dev": "node -r dotenv/config index.js",
-    "test": "jest"
+    "start_local": "echo use: $ npm run dev",
+    "dev": "node -r dotenv/config index.js"
+    
   },
   "repository": {
     "type": "git",
