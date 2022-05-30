@@ -23,7 +23,7 @@ const jwt = require('jsonwebtoken');
         }
 
         // token is valid, set in request and move on
-        req.loggedin = decodedToken;
+        req.token = decodedToken;
         req.username = req.body.username;       // useless?
         console.log('token okay, moving on');
         next();
