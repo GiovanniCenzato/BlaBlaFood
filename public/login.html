@@ -217,6 +217,8 @@
         async function login(){
             var mailvalue = document.getElementById('email-login').value;
             var passwordvalue = document.getElementById('password-login').value;
+            console.log(mailvalue);
+            console.log(passwordvalue);
             if(!(mailvalue === "" || passwordvalue === "")){
             fetch(`/api/v2/auth/login`, {
                     method: 'POST',
@@ -225,16 +227,20 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        email: document.getElementById('email-login').value,
-                        password: document.getElementById('password-login').value
+                        email: mailvalue,
+                        password: passwordvalue
                     })
             }).then(res => {
-                if (!res.ok)
+                if (!res.ok){
                     console.log('Error sending request');
-                return res.json();
+                    alert(res.json.message);
+                }
+                else
+                    return res.json();
             }).then(_json => {
                 // save the token in sessionStorage
-                sessionStorage.setItem('loggedin', _json.token);
+                sessionStorage.setItem('token', _json.token);
+                sessionStorage.setItem('username', _json.username);
                 console.log('token saved to session storage');
                 window.location.href = 'index.html';
 
