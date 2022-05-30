@@ -15,6 +15,7 @@
     <body>
 
         <script>
+            // TODO: 
             // TODO: tendenzialmente inutile, un utente puo creare un annuncio solo se loggato quindi non ha senso condizionare la visualizzazione della navbar
             $(document).ready(function(){
                 // set content of login/logout button
@@ -79,14 +80,7 @@
                     <form class="row g-3">
                         <div class="col-auto">
                             <label for="place" class="form-label">Indirizzo</label>
-                                <input class="form-control" list="datalistOptions" id="place" placeholder="Type to search location...">
-                                <datalist id="datalistOptions">
-                                <option value="via della Croce 11">
-                                <option value="via Marighetto 2">
-                                <option value="viale Verona 6"></option>
-                                <option value="via Gabbiolo 21">
-                                <option value="piazzale Loreto">                    
-                                </datalist>
+                            <input type="text" class="form-control" id="place" placeholder="Type to search location...">
                         </div> 
                         <div class="pb-3 ">
                             <label for="city" class="form-label">Città</label>
@@ -208,8 +202,8 @@
                             'x-access-token': `${sessionStorage.getItem('token')}`
                         },
                         body: JSON.stringify({
-                            title:     title,
-                            description:     description,
+                            title: title,
+                            description: description,
                             tags: tags,
                             tipology: document.getElementById('tipology').value,
                             maxReservations: maxReservations,
