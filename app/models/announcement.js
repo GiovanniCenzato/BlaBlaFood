@@ -4,13 +4,15 @@ var Schema = mongoose.Schema;
 module.exports = mongoose.model('Announcement', new Schema({ 
 	title: String,
     description: String,
-    address: String,
-    city: String,
+    location: {
+        address: String,
+        coordinates: []
+    },
     date: Date,                         // includes time 
     tags: [],
-    maxReservations: Number,
     price: Number,
     authorId: Schema.Types.ObjectId,
+    maxReservations: Number,
     reservations: [],
     queuedReservations: []
 }));
