@@ -6,11 +6,11 @@ module.exports = mongoose.model('Announcement', new Schema({
     description: String,
     address: String,
     city: String,
-    date: Date,                         // includes time 
+    date: Date,                         // date and time together 
     tags: [],
     maxReservations: Number,
     price: Number,
     authorId: Schema.Types.ObjectId,
-    reservations: [],
-    queuedReservations: []
+    reservations: [],			// queue of users that are accepted for the announce
+    queuedReservations: []		// queue of users that want to reserve the announce
 }));
