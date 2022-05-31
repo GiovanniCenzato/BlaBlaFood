@@ -9,6 +9,8 @@ module.exports = mongoose.model('Announcement', new Schema({
     date: Date,                         // date and time together 
     tags: [],
     maxReservations: Number,
+	// glutenFree: Boolean,		
+	// lactoseFree: Boolean,
     price: Number,
     authorId: Schema.Types.ObjectId,
     reservations: [],			// queue of users that are accepted for the announce
