@@ -13,8 +13,8 @@ var schema = new Schema({
     email: String,
     password: String,
     userpic: String,
-    announcements: [],
-    reviews: []
+    announcements: [],			// array of announcements that the user had published
+    reviews: []				// array of reviews recived from other users
 });
 
 schema.methods.comparePasswords = (bodypsw, userpsw) => {
