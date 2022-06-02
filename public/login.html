@@ -21,12 +21,14 @@
                 if (sessionStorage.getItem('token') == null) {
                     document.getElementById('profile_btn').setAttribute('href', 'login.html');
                     document.getElementById('login_logout_btn').innerText = 'Login';
-                    document.getElementById('login_logout_btn').setAttribute('onclick', 'window.location.href = "login.html"')
+                    document.getElementById('login_logout_btn').setAttribute('onclick', 'window.location.href = "login.html"');
+                    document.getElementById('announcement_btn').setAttribute('href', 'login.html');
                     document.getElementById('login_logout_dropdown').innerText = 'Accedi';
                 } else {
                     document.getElementById('profile_btn').setAttribute('href', 'profile.html');
                     document.getElementById('login_logout_btn').innerText = 'Logout';
-                    document.getElementById('login_logout_btn').setAttribute('onclick', 'logout()')
+                    document.getElementById('login_logout_btn').setAttribute('onclick', 'logout()');
+                    document.getElementById('announcement_btn').setAttribute('href', 'announcement.html');
                     document.getElementById('login_logout_dropdown').innerText = `Ciao, user`;
                 }
             });
@@ -42,7 +44,7 @@
                             <a class="nav-link" href="index.html">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="announcement.html">Crea annuncio</a>
+                            <a class="nav-link" id="announcement_btn" href="announcement.html">Crea annuncio</a>
                           </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" id="login_logout_dropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Accesso</a>

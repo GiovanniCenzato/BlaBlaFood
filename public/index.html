@@ -48,12 +48,14 @@
                 if (sessionStorage.getItem('token') == null) {
                     document.getElementById('profile_btn').setAttribute('href', 'login.html');
                     document.getElementById('login_logout_btn').innerText = 'Login';
-                    document.getElementById('login_logout_btn').setAttribute('onclick', 'window.location.href = "login.html"')
+                    document.getElementById('login_logout_btn').setAttribute('onclick', 'window.location.href = "login.html"');
+                    document.getElementById('announcement_btn').setAttribute('href', 'login.html');
                     document.getElementById('login_logout_dropdown').innerText = 'Accedi';
                 } else {
                     document.getElementById('profile_btn').setAttribute('href', 'profile.html');
                     document.getElementById('login_logout_btn').innerText = 'Logout';
-                    document.getElementById('login_logout_btn').setAttribute('onclick', 'logout()')
+                    document.getElementById('login_logout_btn').setAttribute('onclick', 'logout()');
+                    document.getElementById('announcement_btn').setAttribute('href', 'announcement.html');
                     document.getElementById('login_logout_dropdown').innerText = `Ciao, ${sessionStorage.getItem('username')}`;
                 }
             });
@@ -69,7 +71,7 @@
                             <a class="nav-link" href="index.html">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="announcement.html">Crea annuncio</a>
+                            <a class="nav-link" id="announcement_btn" href="announcement.html">Crea annuncio</a>
                           </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" id="login_logout_dropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Accesso</a>
@@ -136,7 +138,6 @@
                 </div>
             </div>
         </div>
-
         <script>
 
             function postReview(){
@@ -235,7 +236,7 @@
                     $.each(_json.announcementsList, function(index, item){
                         if(item.reservations.length < item.maxReservations && !(item.username === item.title)){
                             $("#contenitore-annunci").append(
-                                `<div class="card h-100 w-100 mb-2">
+                                `<div class="card h-100 w-100 mb-2" id="${item.id}">
                                     <div class="card-body">
                                         <table cellpadding="8">
                                         <tr>
@@ -282,12 +283,21 @@
                     // create a HTML element for each feature
                     const el = document.createElement('div');
                     el.className = 'marker';
+                    el.setAttribute('id', post.id+'-poi');
+                    
+                    // on hover points geet coloured differently also announcemnt in list
+                    el.onclick = () => {
+                        console.log(el);
+                        console.log(el.id.split('-')[0]);
+                        document.getElementById(el.id.split('-')[0]).style.backgroundColor == 'white' 
+                            ? document.getElementById(el.id.split('-')[0]).style.backgroundColor = '#f0e68c'
+                            : document.getElementById(el.id.split('-')[0]).style.backgroundColor = 'white';
+                    }
 
                     // make a marker for each feature and add to the map
                     new mapboxgl.Marker(el).setLngLat(post.location.coordinates).addTo(map);
                 }
 
-                // on hover points geet coloured differently also announcemnt in list
 
             }
         </script>
