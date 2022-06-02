@@ -52,7 +52,7 @@ const tokenCheck = require('./tokenChecker');
  */
 router.get('/me', tokenCheck, async (req, res, next) => {
     // check for token 
-    if (!req.loggedin) {
+    if (!req.token) {
         return res.status(403).json({
             message: 'Error, user not logged in'
         });
@@ -65,7 +65,7 @@ router.get('/me', tokenCheck, async (req, res, next) => {
     try {
         // get user with email from request
         _user = await User.findOne({
-            email: req.loggedin.email
+            email: req.token.email
         });
     
         // get user announcements
@@ -82,9 +82,9 @@ router.get('/me', tokenCheck, async (req, res, next) => {
         status = 201;
         console.log(message);
 
-    } catch {
+    } catch (e) {
         // set response
-        message = `Could not retrieve user ${_user.username}.`;
+        message = `Could not retrieve user ${_user.username}: ${e}`;
         status = 403;
         console.log(message);
     }
@@ -135,9 +135,9 @@ router.get('/me', tokenCheck, async (req, res, next) => {
             console.log(mesasge);
         }
 
-    } catch {
+    } catch (e) {
         // set response
-        message = `Error trying to retrieve users from database.`;
+        message = `Error trying to retrieve users from database: ${e}`;
         status = 403;
         console.log(message);
     }
@@ -171,9 +171,9 @@ router.get('/me', tokenCheck, async (req, res, next) => {
         status = 201;
         console.log(message);
 
-    } catch {
+    } catch (e) {
         // set response
-        message = `Error retrieving user with id ${id}`;
+        message = `Error retrieving user with id ${id}: ${e}`;
         status = 403;
         console.log(message);
     }
@@ -192,7 +192,7 @@ router.get('/me', tokenCheck, async (req, res, next) => {
  */
  router.post('/:id/reviews', tokenCheck, async (req, res, next) => {
     // check for token 
-    if (!req.loggedin) {
+    if (!req.token) {
         return res.status(403).json({
             message: 'Error, user not logged in'
         });
@@ -230,9 +230,9 @@ router.get('/me', tokenCheck, async (req, res, next) => {
         status = 201;
         console.log(message);
 
-    } catch {
+    } catch (e) {
         // set response
-        message = `Error adding user review.`;
+        message = `Error adding user review: ${e}`;
         status = 403;
         console.log(message);
     }

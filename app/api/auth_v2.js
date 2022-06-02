@@ -41,12 +41,13 @@ const jwt = require('jsonwebtoken');
         }
 
 
-    } catch {
+    } catch (e){
         // set response
-        message = `An error occurred.`;
+        message = `An error occurred: ${e}`;
         status = 403;
     }
 
+    console.log(token);
     // return response
     console.log(message);
     return res.status(status).json({

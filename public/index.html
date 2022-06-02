@@ -11,22 +11,51 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.js'></script>
+        <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.css' rel='stylesheet' />
+        <style>
+            #map {
+                width: 100%;
+                height: 100%;
+            }
+            .marker {
+                background-image: url('https://www.iconpacks.net/icons/2/free-location-pointer-icon-2961-thumb.png');
+                background-size: cover;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                cursor: pointer;
+            }
+        </style>
     </head>
     <body>
         <script>
             $(document).ready(function(){
-                loadAnnouncementsList();
+                // get user position
+                let pos = {};
+                navigator.geolocation.getCurrentPosition(pos => {
+                    // initialise map and announcements list
+                    loadAnnouncementsList(pos);
+
+                }, err => {
+                    // display error if cannot load
+                    document.getElementById('map').innerHTML = `<p>Position access is required to use Map functionalities</p>`;
+                    loadAnnouncementsList({});
+
+                }, {enableHighAccuracy: true});
                 
                 // set content of login/logout button
                 if (sessionStorage.getItem('token') == null) {
                     document.getElementById('profile_btn').setAttribute('href', 'login.html');
                     document.getElementById('login_logout_btn').innerText = 'Login';
-                    document.getElementById('login_logout_btn').setAttribute('onclick', 'window.location.href = "login.html"')
+                    document.getElementById('login_logout_btn').setAttribute('onclick', 'window.location.href = "login.html"');
+                    document.getElementById('announcement_btn').setAttribute('href', 'login.html');
                     document.getElementById('login_logout_dropdown').innerText = 'Accedi';
                 } else {
                     document.getElementById('profile_btn').setAttribute('href', 'profile.html');
                     document.getElementById('login_logout_btn').innerText = 'Logout';
-                    document.getElementById('login_logout_btn').setAttribute('onclick', 'logout()')
+                    document.getElementById('login_logout_btn').setAttribute('onclick', 'logout()');
+                    document.getElementById('announcement_btn').setAttribute('href', 'announcement.html');
                     document.getElementById('login_logout_dropdown').innerText = `Ciao, ${sessionStorage.getItem('username')}`;
                 }
             });
@@ -42,7 +71,7 @@
                             <a class="nav-link" href="index.html">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="announcement.html">Crea annuncio</a>
+                            <a class="nav-link" id="announcement_btn" href="announcement.html">Crea annuncio</a>
                           </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" id="login_logout_dropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Accesso</a>
@@ -60,8 +89,7 @@
         <div class="container">
             <div class="row mt-5">
                 <div class="col">
-                    <div class="container max-width max-height">
-                        mappa
+                    <div class="container max-width max-height" id="map">
                     </div>
                 </div>
                 <div class="col">
@@ -110,7 +138,6 @@
                 </div>
             </div>
         </div>
-
         <script>
 
             function postReview(){
@@ -124,7 +151,8 @@
                 .then(res => {
                     if (!res.ok)
                         console.log('Error sending request');
-                    return res.json();
+                    else 
+                        return res.json();
                 }).then(_json => {
                     user = _json;
                     
@@ -187,7 +215,7 @@
             }
 
             // script to fetch announcements from backend
-            function loadAnnouncementsList(){
+            function loadAnnouncementsList(userpos){
                 //elimina eventuali annunci già visualizzati
                 $("#contenitore-annunci").empty(); 
 
@@ -206,15 +234,13 @@
                 })
                 .then( _json => {
                     $.each(_json.announcementsList, function(index, item){
-                        
                         if(item.reservations.length < item.maxReservations && !(item.username === item.title)){
-                            
                             $("#contenitore-annunci").append(
-                                `<div class="card h-100 w-100 mb-2">
+                                `<div class="card h-100 w-100 mb-2" id="${item.id}">
                                     <div class="card-body">
                                         <table cellpadding="8">
                                         <tr>
-                                            <td><img src="${item.userpic}" width="100px" class="rounded-circle"></td>
+                                            <td><img src="${item.userpic===undefined ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Breezeicons-actions-22-im-user.svg/1200px-Breezeicons-actions-22-im-user.svg.png' : item.userpic}" width="80px" height="80px" class="rounded-circle"></td>
                                             <td><button onclick="userDetails('${item.author._id}')" class="card-title">${item.author.username}</button></td>
                                             <td><h4>4 stelle</h4></td>
                                         </tr>
@@ -229,10 +255,50 @@
                                     </div>
                             </div>`);
                     }});
+
+                    // load announcements to map
+                    initMap(userpos, _json.announcementsList);
+                    
                 })
                 .catch( err => {
                     console.log("Error occurred: " + err);
                 });
+            }
+
+            // map handling
+            function initMap(userpos, announcements){
+                // build map
+                mapboxgl.accessToken = 'pk.eyJ1IjoiYnJhZ2dpbm8iLCJhIjoiY2wzcHpidzhqMDdmNTNkbTFjN2Fmemw5biJ9.iLklLP6h1AhRoQEriyy7Vw'; 
+                const map = new mapboxgl.Map({
+                    container: 'map',
+                    style: 'mapbox://styles/mapbox/light-v10', 
+                    center: [userpos.coords.longitude, userpos.coords.latitude],
+                    zoom: 5
+                });
+
+                // add markers to map
+                console.log(announcements);
+                for (const post of announcements) {
+                    console.log(post);
+                    // create a HTML element for each feature
+                    const el = document.createElement('div');
+                    el.className = 'marker';
+                    el.setAttribute('id', post.id+'-poi');
+                    
+                    // on hover points geet coloured differently also announcemnt in list
+                    el.onclick = () => {
+                        console.log(el);
+                        console.log(el.id.split('-')[0]);
+                        document.getElementById(el.id.split('-')[0]).style.backgroundColor == 'white' 
+                            ? document.getElementById(el.id.split('-')[0]).style.backgroundColor = '#f0e68c'
+                            : document.getElementById(el.id.split('-')[0]).style.backgroundColor = 'white';
+                    }
+
+                    // make a marker for each feature and add to the map
+                    new mapboxgl.Marker(el).setLngLat(post.location.coordinates).addTo(map);
+                }
+
+
             }
         </script>
     </body>

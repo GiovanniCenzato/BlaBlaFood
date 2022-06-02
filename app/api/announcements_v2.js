@@ -1,4 +1,6 @@
 const express = require('express');
+var geo = require('mapbox-geocoding');
+const axios = require('axios').default;
 const router = express.Router();
 const Announcement = require('../models/announcement.js');
 const User = require('../models/user.js');
@@ -9,7 +11,7 @@ const tokenCheck = require('./tokenChecker');
  */
 router.post('', tokenCheck, async (req, res, next) => {
     // check for token 
-    if (!req.loggedin) {
+    if (!req.token) {
         return res.status(403).json({
             message: 'Error, user not logged in'
         });
@@ -23,16 +25,30 @@ router.post('', tokenCheck, async (req, res, next) => {
     try {
         // get user with email from request
         _user = await User.findOne({
-            email: req.loggedin.email
+            email: req.token.email
         });
+
+        let coords;
+        let url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${req.body.address},${req.body.city}.json?access_token=${process.env.MAPBOX_TOKEN}`;
+        let geores = await axios.get(url);
+        coords = geores.data.features[0].geometry.coordinates;
         
+        let datestr = new Date(
+            req.body.date.split('-')[2], 
+            req.body.date.split('-')[1]-1,
+            req.body.date.split('-')[0], 
+            req.body.time.split(':')[0], 
+            req.body.time.split(':')[1] );
+
         // set new announcement's data
         newAnn = new Announcement({
             title: req.body.title,
             description: req.body.description,
-            address: req.body.address,
-            city: req.body.city,
-            date: req.body.date, 
+            location: {
+                address: `${req.body.place}, ${req.body.city}`,
+                coordinates: [coords[0], coords[1]]
+            },
+            date: datestr.toISOString(), 
             tags: req.body.tags,
             price: req.body.price,
             authorId: _user._id,
@@ -47,9 +63,9 @@ router.post('', tokenCheck, async (req, res, next) => {
         message = `New announcement ${req.body.title} successfully saved!`;
         status = 201;
 
-    } catch {
+    } catch (e) {
         // set response
-        message = `Error trying to save ${req.body.title} to database.`
+        message = `Error trying to save ${req.body.title} to database: ${e}`
         status = 403;
     }
     
@@ -117,6 +133,8 @@ router.post('', tokenCheck, async (req, res, next) => {
                             title: ann.title,
                             description: ann.description,
                             tags: ann.tags,
+                            location: ann.location,
+                            date: ann.date,
                             maxReservations: ann.maxReservations,
                             reservations: ann.reservations,
                             queuedReservations: ann.queuedReservations, // needed?
@@ -135,9 +153,9 @@ router.post('', tokenCheck, async (req, res, next) => {
             status = 201;
         }
         
-    } catch {
+    } catch (e) {
         // set response
-        message = `Error trying to retrieve announcements from database.`;
+        message = `Error trying to retrieve announcements from database: ${e}`;
         status = 505;
     }
     
@@ -169,8 +187,8 @@ router.get('/:id', async (req, res) => {
         message = `Found announcement with id ${id}`;
         status = 201;
 
-    } catch {
-        message = `error retrieving announcement with id ${id}`;
+    } catch (e) {
+        message = `error retrieving announcement with id ${id}: ${e}`;
         status = 403;
 
     }
@@ -190,7 +208,7 @@ router.get('/:id', async (req, res) => {
 */
 router.post('/:id/book', tokenCheck, async (req, res, next) => {
     // check for token 
-    if (!req.loggedin) {
+    if (!req.token) {
         return res.status(403).json({
             message: 'Error, user not logged in'
         });
@@ -199,7 +217,7 @@ router.post('/:id/book', tokenCheck, async (req, res, next) => {
     let message;
     let status;
     let annId = req.params.id;                              // id of the announcement to be booked/confirmed
-    let userId = req.loggedin.id;                           // id of the user executing the operation
+    let userId = req.token.id;                           // id of the user executing the operation
 
     try {
         // retrieve announcement
@@ -223,9 +241,9 @@ router.post('/:id/book', tokenCheck, async (req, res, next) => {
             status = 403;
         }
 
-    } catch {
+    } catch (e) {
         // set response
-        message = `error retrieving announcement with id ${annId}`;
+        message = `error retrieving announcement with id ${annId}: ${e}`;
         status = 403;
     }
 
@@ -239,7 +257,7 @@ router.post('/:id/book', tokenCheck, async (req, res, next) => {
 
 router.post('/:id/confirm', tokenCheck, async (req, res, next) => {
     // check for token 
-    if (!req.loggedin) {
+    if (!req.token) {
         return res.status(403).json({
             message: 'Error, user not logged in'
         });
@@ -249,7 +267,7 @@ router.post('/:id/confirm', tokenCheck, async (req, res, next) => {
     let status;
 
     let annId = req.params.id;                              // id of the announcement to be booked/confirmed
-    let userId = req.loggedin.id;                           // id of the user executing the operation
+    let userId = req.token.id;                           // id of the user executing the operation
     let userToConfirmId = req.body.userToConfirmId;         // id of the user whose booking is to be confirmed
 
     try {
@@ -277,9 +295,9 @@ router.post('/:id/confirm', tokenCheck, async (req, res, next) => {
             status = 403;
         }
 
-    } catch {
+    } catch (e) {
         // set response
-        message = `Error retrieving announcement with id ${annId}`;
+        message = `Error retrieving announcement with id ${annId}: ${e}`;
         status = 403;
     }
 
