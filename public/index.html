@@ -156,23 +156,23 @@
                     user = _json;
                     
                     // edit modal props
-                    // document.getElementById('detailsModal-title').innerText = `${user.name} ${user.surname} (${user.username})`;
-                    // document.getElementById('detailsModal-phone').innerText = user.phone;
-                    // document.getElementById('detailsModal-birthday').innerText = user.birthday;
-                    // document.getElementById('detailsModal-home').innerText = user.home;
-                    // document.getElementById('detailsModal-userpic').setAttribute('src', user.userpic);
+                    document.getElementById('detailsModal-title').innerText = `${user.name} ${user.surname} (${user.username})`;
+                    document.getElementById('detailsModal-phone').innerText = user.phone;
+                    document.getElementById('detailsModal-birthday').innerText = user.birthday;
+                    document.getElementById('detailsModal-home').innerText = user.home;
+                    document.getElementById('detailsModal-userpic').setAttribute('src', user.userpic);
     
                     // append reviews
-                    // $.each(user.reviews, (index, item) => {
-                    //     $('#detailsModal-reviews').append(`
-                    //         <div>
-                    //             <p>Title: ${item.title}</p>
-                    //             <p>Description: ${item.description}</p>
-                    //             <p>Posted by: ${item.author.username}</p>
-                    //             <p>${item.stars}/5 stars</p>
-                    //         </div>
-                    //     `);
-                    // }) 
+                     $.each(user.reviews, (index, item) => {
+                         $('#detailsModal-reviews').append(`
+                             <div>
+                                 <p>Title: ${item.title}</p>
+                                 <p>Description: ${item.description}</p>
+                                 <p>Posted by: ${item.author.username}</p>
+                                 <p>${item.stars}/5 stars</p>
+                             </div>
+                         `);
+                     }) 
     
                     // show modal
                     $('#detailsModal').modal('show');
