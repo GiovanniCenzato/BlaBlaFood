@@ -186,7 +186,6 @@
                                             <tr><td><h2 class="card-title">${item.title}</h2></td>
                                             <td><h4>${item.stars}/5 stelle</h4></td></tr>
                                             </table>
-                                            <p class="card-subtitle"><b>id annuncio: ${item.announcementId}</b></p>
                                             <p class="card-text">${item.description}</p>
                                         </div>
                                     </div>`);
@@ -203,6 +202,7 @@
                                     console.log(item.queuedReservations);
                                     for (let ann of item.queuedReservations){
                                         ann['annId'] = item.id;
+                                        ann['annTitle'] = item.title;
                                     }
                                     userstoconfirm.push(...item.queuedReservations);
                                 }
@@ -213,7 +213,7 @@
                                 $("#container-toconfirm").append(
                                     `<div class="card h-100 w-100 mb-2" id="${item.annId}">
                                         <div class="card-body">
-                                            <h2 class="card-title">Announcement: ${item.annId}</h2>
+                                            <h2 class="card-title">Announcement: ${item.annTitle}</h2>
                                             <p class="card-text">Waiting user: ${item.username}</p>
                                         </div>
                                         <button onclick="handleUser('${item.annId}', '${item._id}', true)" >Accetta</button>

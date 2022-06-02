@@ -235,13 +235,14 @@
                     $.each(_json.announcementsList, function(index, item){
                         if(item.reservations.length < item.maxReservations){
                             // if user is logged in, dont show own announcements or announcements booked
-                            if (sessionStorage.getItem('username')!="") {
+                            if (sessionStorage.getItem('username')!="" && sessionStorage.getItem('username')!=undefined) {
                                 let username = sessionStorage.getItem('username');
                                 
                                 if (username != item.author.username 
                                     && item.reservations.find(user => user.username == username) != undefined
                                     && item.queuedReservations.find(user => user.username == username) != undefined) {
-                                    $("#contenitore-annunci").append(
+                                    
+                                        $("#contenitore-annunci").append(
                                         `<div class="card h-100 w-100 mb-2">
                                             <div class="card-body">
                                                 <table cellpadding="8">

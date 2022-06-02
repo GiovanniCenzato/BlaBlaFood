@@ -105,7 +105,7 @@ router.post('', tokenCheck, async (req, res, next) => {
                 announcements
                 .filter( ann => {
                     let okay = true;
-                    if (filters.filter != '') {
+                    if (filters.filter != undefined) {
                         // title/description filter
                         if (!ann.title.toString().toLowerCase().includes(filters.filter.toString().toLowerCase()) &&
                         !ann.description.toString().toLowerCase().includes(filters.filter.toString().toLowerCase()) ) {
@@ -114,9 +114,9 @@ router.post('', tokenCheck, async (req, res, next) => {
                     }
                         
                     // vegan/vegetarian/glutenfree filter
-                    if (filters.vegan == 'true' && !ann.tags.includes('VEG'))                { okay = false; }
-                    if (filters.vegetarian == 'true' && !ann.tags.includes('vegetarian'))    { okay = false; }
-                    if (filters.glutenfree == 'true' && !ann.tags.includes('gluten-free'))   { okay = false; }
+                    if (filters.vegan != undefined && filters.vegan == 'true' && !ann.tags.includes('VEG'))                { okay = false; }
+                    if (filters.vegan != undefined && filters.vegetarian == 'true' && !ann.tags.includes('vegetarian'))    { okay = false; }
+                    if (filters.vegan != undefined && filters.glutenfree == 'true' && !ann.tags.includes('gluten-free'))   { okay = false; }
                     
                     // can return?
                     if (okay) return ann;
