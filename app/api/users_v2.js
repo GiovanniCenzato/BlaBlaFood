@@ -24,6 +24,7 @@ const tokenCheck = require('./tokenChecker');
         userpic: req.body.userpic!='' ? req.body.userpic : 'https://cdn-icons-png.flaticon.com/512/64/64572.png',
         home: req.body.home,
         email: req.body.email,
+        score: 0,
         password: psw,
         announcements: []
     });
@@ -215,7 +216,7 @@ router.get('/me', tokenCheck, async (req, res, next) => {
     review.title = req.body.title;
     review.description = req.body.description;
     review.announcementId = req.body.announcementId;
-    review.authorId = req.body.authorId;
+    review.poster = req.body.poster;
     review.stars = req.body.stars;
 
     try {
