@@ -24,12 +24,7 @@ const tokenCheck = require('./tokenChecker');
         password: req.body.password,
         announcements: []
     });
-  
-   if (!newUser.email || typeof newUser.email != 'string' || !checkIfEmailInString(newUser.email)) {
-        res.status(400).json({ error: 'The field "email" must be a non-empty string, in email format' });
-        return;
-    }
-  
+
     try {
         newUser = await newUser.save()
         console.log(`New user ${req.body.username} successfully saved!`);
@@ -178,12 +173,4 @@ router.post('/:id/reviews', tokenCheck, async (req, res, next) => {
         });
     }
 });
-
-
-function checkIfEmailInString(text) {
-    // eslint-disable-next-line
-    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(text);
-}
-
 module.exports = router;
