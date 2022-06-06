@@ -9,7 +9,6 @@
     "start": "node index.js",
     "start_local": "echo use: $ npm run dev",
     "dev": "node -r dotenv/config index.js"
-    
   },
   "repository": {
     "type": "git",
@@ -33,7 +32,7 @@
     "mongoose": "^6.3.3"
   },
   "devDependencies": {
-    "dotenv": "^16.0.0",
+    "dotenv": "^16.0.1",
     "jest": "^28.1.0",
     "supertest": "^6.2.3"
   }
