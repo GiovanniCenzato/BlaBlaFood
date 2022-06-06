@@ -29,7 +29,8 @@
     "jsonwebtoken": "^8.5.1",
     "mapbox-geocoding": "^0.1.5",
     "momentjs": "^2.0.0",
-    "mongoose": "^6.3.3"
+    "mongoose": "^6.3.3",
+    "dotenv": "^16.0.1"
   },
   "devDependencies": {
     "dotenv": "^16.0.1",
