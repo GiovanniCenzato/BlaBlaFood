@@ -69,7 +69,9 @@
                     <!-- Riga 2-->
                     <table style="width:78%;" >
                         <tr>
-                            <td rowspan="4" style="border: 3px solid white; width:30%;" align="center" ><img class="card-img-top" src="https://termoidraulicabassini.it/wp-content/uploads/2015/12/utente.png" alt="Card image" style="width:100px;height:100px;"></td>
+                            <td rowspan="4" style="border: 3px solid white; width:30%;" align="center" >
+                                <img id="userpic" class="card-img-top" src="https://termoidraulicabassini.it/wp-content/uploads/2015/12/utente.png" alt="Card image" style="width:100px;height:100px;">
+                            </td>
                             <td style="width:30%;"><h4><b>Informazioni Personali</b></h4></td>
                             <td style="width:40%;"><h4><b>Descrizione</b></h4></td>
                         </tr>
@@ -101,6 +103,10 @@
                     <div id="container-reviews"></div>
                 </div>
                 <div>
+                    <h2>Annunci postati</h2>
+                    <div id="container-posted"></div>
+                </div>
+                <div>
                     <h2>Utenti in attesa di conferma</h2>
                     <div id="container-toconfirm"></div>
                 </div>
@@ -130,6 +136,7 @@
                         document.getElementById('birthday').innerText = user.birthday.toString();
                         document.getElementById('description').innerText = user.description;
                         document.getElementById('level').innerText = getUserLevel(user.level);
+                        document.getElementById('userpic').setAttribute('src', user.userpic);
                        
                         // === informazioni sugli annunci ===
                         fetch(`/api/v2/announcements/`)
@@ -165,7 +172,6 @@
                                         <div class="card-body">
                                             <table cellpadding="8">
                                             <tr><td><h2 class="card-title">${item.author.username}</h2></td>
-                                            <td><h4>4 stelle</h4></td></tr>
                                             </table>
                                             <p class="card-subtitle" style="float: right;">tags: ${item.tags.join(' ')}</p>
                                             <p class="card-subtitle"><b>${item.title}</b></p>
@@ -177,6 +183,31 @@
                                     </div>`);
                             });
                           
+                            // Annunci postati
+                            console.log('posted:');
+                            $.each(annList.filter(item =>{
+                                // only posted by the user and not yet booked
+                                item.author.username == user.username 
+                                && item.reservations.length == 0 
+                                && item.queuedReservations.length == 0
+                            }), function(index, item){
+                                $("#container-booked").append(
+                                    `<div class="card h-100 w-100 mb-2" id="${item.id}-card">
+                                        <div class="card-body">
+                                            <table cellpadding="8">
+                                            <tr><td><h2 id="${item.id}-title" class="card-title">${item.title}</h2></td>
+                                            </table>
+                                            <p id="${item.id}-description" class="card-subtitle"><b>${item.description}</b></p>
+                                            <p id="${item.id}-address" class="card-text">${item.address}</p>
+                                            <p id="${item.id}-date" class="card-text">${item.date}</p>
+                                            <p id="${item.id}-price" class="card-text">${item.price}</p>
+                                            </div>
+                                        <div class="card-footer">
+                                            <button class="btn btn-dark btn-lg" style="font-size:15px;" id="edit-announcement-${id}" editAnnouncement('${item.id}', true)">Modifica annuncio</button>
+                                        </div>
+                                    </div>`);
+                            });
+
                             // Le tue recensioni
                             console.log('reviews:');
                             $.each(user.reviews, function(index, item){
@@ -283,6 +314,10 @@
                     }
                 }
 
+                /**
+                 * function to edit user profile.
+                 * works by changing texts to inputs and then updating the moongose model
+                 */
                 function editProfile(_switch) {
                     if (_switch) {
                         // save current state user
@@ -320,7 +355,7 @@
                         user.description = document.getElementById('description-edit').value=='' ? document.getElementById('description-edit').placeholder : document.getElementById('description-edit').value;
 
                         // send request to api
-                        fetch(`/api/v1/users/me`, {
+                        fetch(`/api/v2/users/me`, {
                             method: 'PUT',
                             mode: 'cors',
                             headers: {
@@ -362,7 +397,87 @@
                         });
                     sessionStorage.removeItem('old_user');
                     }
-                    
+                }
+
+                /**
+                 * function to update announcements
+                 */
+                function editAnnouncement(id, _switch) {
+                    if (_switch) {
+                        // save current state user
+                        let old_ann = {};
+
+                        old_ann.title = document.getElementById('title').innerText;
+                        old_ann.description = document.getElementById('description').innerText;
+                        old_ann.address = document.getElementById('address').innerText;
+                        old_ann.date = document.getElementById('date').innerText;
+                        old_ann.price = document.getElementById('price').innerText;
+                        sessionStorage.setItem('old_ann', JSON.stringify(old_ann));
+                        
+                        // create inputs
+                        console.log(old_user);
+                        document.getElementById('title').innerHTML = `<input type="text" placeholder="${old_ann.title}" id="${id}-title-edit" />`;
+                        document.getElementById('description').innerHTML = `<input type="text" placeholder="${old_ann.description}" id="${id}-description-edit" />`;
+                        document.getElementById('address').innerHTML = `<input type="address" placeholder="${old_ann.address}" id="${id}-address-edit" />`;
+                        document.getElementById('date').innerHTML = `<input type="date" placeholder="${old_ann.date}" id="${id}-date-edit" />`;
+                        document.getElementById('price').innerHTML = `<input type="number" placeholder="${old_ann.price}" id="${id}-price-edit" />`;
+
+                        // button to save
+                        document.getElementById(`edit-announcement-${id}`).setAttribute('value', 'Salva modifiche');
+                        document.getElementById(`edit-announcement-${id}`).setAttribute('onclick', 'editAnnouncement(false)');
+
+                    } else {
+                        // save edits, update model and close 
+                        let ann = {};
+                        ann.title = document.getElementById(`${id}-title-edit`).value=='' ? document.getElementById(`${id}-title-edit`).placeholder : document.getElementById(`${id}-title-edit`).value;
+                        ann.description = document.getElementById(`${id}-description-edit`).value=='' ? document.getElementById(`${id}-description-edit`).placeholder : document.getElementById(`${id}-description-edit`).value;
+                        ann.address = document.getElementById(`${id}-address-edit`).value=='' ? document.getElementById(`${id}-address-edit`).placeholder : document.getElementById(`${id}-address-edit`).value;
+                        ann.date = document.getElementById(`${id}-date-edit`).value=='' ? document.getElementById(`${id}-date-edit`).placeholder : document.getElementById(`${id}-date-edit`).value;
+                        ann.price = document.getElementById(`${id}-price-edit`).value=='' ? document.getElementById(`${id}-price-edit`).placeholder : document.getElementById(`${id}-price-edit`).value;
+
+                        // send request to api
+                        fetch(`/api/v2/users/me`, {
+                            method: 'PUT',
+                            mode: 'cors',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'x-access-token': `${sessionStorage.getItem('token')}`
+                            },
+                            body: JSON.stringify({
+                                announcement
+                            })
+                        })
+                        .then(res => {if(!res.ok) {console.log('error!'); } return res.json(); })
+                        .then( _json => {
+                            // success! save the updated fields
+                            document.getElementById('name').innerHTML = `${user.name}`;
+                            document.getElementById('surname').innerHTML = `${user.surname}`;
+                            document.getElementById('username').innerHTML = `${user.username}`;
+                            document.getElementById('home').innerHTML = `${user.home}`;
+                            document.getElementById('birthday').innerHTML = `${user.birthday}`;
+                            document.getElementById('description').innerHTML = `${user.description}`;
+                             
+                            // button to save
+                            document.getElementById('edit-profile').setAttribute('value', 'Modifica profilo');
+                            document.getElementById('edit-profile').setAttribute('onclick', 'editProfile(true)');
+
+                        })
+                        .catch( err => {
+                            console.log("Error occurred: " + err);
+                            let old_user = JSON.parse(sessionStorage.getItem('old_user'));
+                            document.getElementById('name').innerHTML = `${old_user.name}`;
+                            document.getElementById('surname').innerHTML = `${old_user.surname}`;
+                            document.getElementById('username').innerHTML = `${old_user.username}`;
+                            document.getElementById('home').innerHTML = `${old_user.home}`;
+                            document.getElementById('birthday').innerHTML = `${old_user.birthday}`;
+                            document.getElementById('description').innerHTML = `${old_user.description}`;
+                             
+                            // button to save
+                            document.getElementById('edit-profile').setAttribute('value', 'Modifica profilo');
+                            document.getElementById('edit-profile').setAttribute('onclick', 'editProfile(true)');
+                        });
+                    sessionStorage.removeItem('old_user');
+                    }
                 }
             </script>
     </body>

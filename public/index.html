@@ -104,78 +104,118 @@
                                 </label>
                                 </div>
                         </div>
-
                         <div id="contenitore-annunci" class="col">
-                            
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Modal -->
-        <div class="modal fade" id="detailsModal-container" tabindex="-1" role="dialog" aria-labelledby="detailsModal" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="detailsModal-title"></h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="detailsModal-body">
-                        <img width="100px" id="detailsModal-userpic" src="" />
-                        <p class="modal-title" id="detailsModal-phone"></p>
-                        <p class="modal-title" id="detailsModal-home"></p>
-                        <p class="modal-title" id="detailsModal-birthday"></p>
-                    </div>
-                    <div class="detailsModal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" onclick="postReview()" id="detailsModal-addreview">Add review</button>
-                    </div>
+        <!-- The Modal -->
+        <div class="modal fade" id="modal-userinfo">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-userinfo-title"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
+
+                <div class="modal-body">
+                    <img width="100px" height="100px" class="rounded-circle" id="modal-userinfo-userpic" src="" />
+                    <p class="modal-title" id="modal-userinfo-phone"></p>
+                    <p class="modal-title" id="modal-userinfo-home"></p>
+                    <p class="modal-title" id="modal-userinfo-birthday"></p>
+                </div>
+
+
+                <div class="modal-body">
+                    <input type="text" placeholder="title" id="modal-review-title" />
+                    <input type="text" placeholder="description" id="modal-review-description" />
+                    <input type="number" placeholder="stars" max="5" min="1" id="modal-review-stars" />
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <!-- TODO: can review only if ate -->
+                    <button type="button" class="btn btn-primary" id="modal-userinfo-addreview">Add review</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                </div>
+        
+            </div>
             </div>
         </div>
 
-        <script>
+    <script>
+            function postReview(userid){
+                console.log('asdfdg');
+                // take parameters
+                let title = document.getElementById('modal-review-title').value;
+                let description = document.getElementById('modal-review-description').value;
+                let stars = document.getElementById('modal-review-stars').value;
 
-            function postReview(){
-                console.log('foo');
+                // send request
+                fetch(`/api/v2/users/${userid}/reviews`, {
+                    method: 'POST',
+                        mode: 'cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-access-token': `${sessionStorage.getItem('token')}`
+                        },
+                    body: JSON.stringify({
+                        title: title,
+                        description: description,
+                        announcementId: null,
+                        poster: sessionStorage.getItem('username'),
+                        stars: stars
+                    })
+                })
+                .then(res => {if (!res.ok) {console.log('Error sending request');} else return res.json();})
+                .then(_json => {
+                    console.log(_json.message);
+                    alert(_json.message);
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+                
+
+                // outcome
             }
 
             // fucntion to show modal with user details to post a review
             function userDetails(userid) {
                 // get user from the backend
                 fetch(`/api/v2/users/${userid}`)
-                .then(res => {
-                    if (!res.ok)
-                        console.log('Error sending request');
-                    else 
-                        return res.json();
-                }).then(_json => {
-                    user = _json;
+                .then(res => {if (!res.ok) {console.log('Error sending request');} else return res.json();})
+                .then(_json => {
+                    user = _json.user;
                     
                     // edit modal props
-                    document.getElementById('detailsModal-title').innerText = `${user.name} ${user.surname} (${user.username})`;
-                    document.getElementById('detailsModal-phone').innerText = user.phone;
-                    document.getElementById('detailsModal-birthday').innerText = user.birthday;
-                    document.getElementById('detailsModal-home').innerText = user.home;
-                    document.getElementById('detailsModal-userpic').setAttribute('src', user.userpic);
-    
+                    document.getElementById('modal-userinfo-title').innerText = `${user.name} ${user.surname} (${user.username})`;
+                    document.getElementById('modal-userinfo-phone').innerText = `Phone: ${user.phone}`;
+                    document.getElementById('modal-userinfo-birthday').innerText = `Birthday: ${user.birthday.split(':')[0]}`;
+                    document.getElementById('modal-userinfo-home').innerText = `Home: ${user.home}`;
+                    document.getElementById('modal-userinfo-userpic')
+                        .setAttribute('src', (user.userpic==undefined) ? 'https://termoidraulicabassini.it/wp-content/uploads/2015/12/utente.png' : user.userpic);
+                    document.getElementById('modal-userinfo-addreview').setAttribute('onclick', `postReview('${userid}')`);
+                    
                     // append reviews
                      $.each(user.reviews, (index, item) => {
-                         $('#detailsModal-reviews').append(`
-                             <div>
-                                 <p>Title: ${item.title}</p>
-                                 <p>Description: ${item.description}</p>
-                                 <p>Posted by: ${item.author.username}</p>
-                                 <p>${item.stars}/5 stars</p>
-                             </div>
-                         `);
+                         $('#modal-userinfo-reviews').append(
+                            `<div class="card h-100 w-100 mb-2">
+                                <div class="card-body">
+                                    <table cellpadding="8">
+                                    <tr><td><h2 class="card-title">${item.title}</h2></td>
+                                    <td><h4>${item.stars}/5 stelle</h4></td></tr>
+                                    </table>
+                                    <p class="card-text">${item.description}</p>
+                                </div>
+                            </div>`);
                      }) 
     
-                    // show modal
-                    $('#detailsModal').modal('show');
                 });
 
 
@@ -194,16 +234,11 @@
                             'x-access-token': `${sessionStorage.getItem('token')}`
                         }
                     })
-                    .then(res => {
-                        if (!res.ok)
-                            console.log('Error sending request');
-                        return res.json();
-                    }).then(_json => {
+                    .then(res => {if (!res.ok) {console.log('Error sending request');} else return res.json();})
+                    .then(_json => {
                         console.log(_json.message);
                         alert(_json.message);
                     })
-
-
                 }
             }
 
@@ -234,66 +269,32 @@
                 .then( _json => {
                     $.each(_json.announcementsList, function(index, item){
                         if(item.reservations.length < item.maxReservations){
-                            // if user is logged in, dont show own announcements or announcements booked
-                            if (sessionStorage.getItem('username')!="" && sessionStorage.getItem('username')!=undefined) {
-                                let username = sessionStorage.getItem('username');
-                                
-                                if (username != item.author.username 
-                                    && item.reservations.find(user => user.username == username) != undefined
-                                    && item.queuedReservations.find(user => user.username == username) != undefined) {
-                                    
-                                        $("#contenitore-annunci").append(
-                                        `<div class="card h-100 w-100 mb-2">
-                                            <div class="card-body">
-                                                <table cellpadding="8">
-                                                <tr>
-                                                    <td><img src="${item.userpic===undefined ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Breezeicons-actions-22-im-user.svg/1200px-Breezeicons-actions-22-im-user.svg.png' : item.userpic}" width="80px" height="80px" class="rounded-circle"></td>
-                                                    <td><button onclick="userDetails('${item.author._id}')" class="card-title">${item.author.username}</button></td>
-                                                    <td><h4>4 stelle</h4></td>
-                                                </tr>
-                                                </table>
-                                                <p class="card-subtitle" style="float: right;">tags: ${item.tags.join(' ')}</p>
-                                                <p class="card-subtitle"><b>${item.title}</b></p>
-                                                <p class="card-text">${item.description}</p>
-                                            </div>
-                                            <div class="card-footer">
-                                                <a href="#" class="btn btn-primary" onclick="attemptBooking('${item.id}')">Prenota</a>
-                                                <p class="card-subtitle" style="float: right;">Posti già prenotati: ${item.reservations.length}/${item.maxReservations}</p>
-                                            </div>
-                                    </div>`);
-                                }
-                                
-                                // otherwise if not logged in
-                            } else {
-                                $("#contenitore-annunci").append(
-                                    `<div class="card h-100 w-100 mb-2">
-                                        <div class="card-body">
-                                            <table cellpadding="8">
-                                            <tr>
-                                                <td><img src="${item.userpic===undefined ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Breezeicons-actions-22-im-user.svg/1200px-Breezeicons-actions-22-im-user.svg.png' : item.userpic}" width="80px" height="80px" class="rounded-circle"></td>
-                                                <td><button onclick="userDetails('${item.author._id}')" class="card-title">${item.author.username}</button></td>
-                                                <td><h4>4 stelle</h4></td>
-                                            </tr>
-                                            </table>
-                                            <p class="card-subtitle" style="float: right;">tags: ${item.tags.join(' ')}</p>
-                                            <p class="card-subtitle"><b>${item.title}</b></p>
-                                            <p class="card-text">${item.description}</p>
-                                        </div>
-                                        <div class="card-footer">
-                                            <a href="#" class="btn btn-primary" onclick="attemptBooking('${item.id}')">Prenota</a>
-                                            <p class="card-subtitle" style="float: right;">Posti già prenotati: ${item.reservations.length}/${item.maxReservations}</p>
-                                        </div>
-                                </div>`);
-                            }
-                        }});
-
-                    // load announcements to map
+                            $("#contenitore-annunci").append(
+                            `<div class="card h-100 w-100 mb-2">
+                                <div class="card-body">
+                                    <table cellpadding="8">
+                                    <tr>
+                                        <td><img src="${item.userpic===undefined ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Breezeicons-actions-22-im-user.svg/1200px-Breezeicons-actions-22-im-user.svg.png' : item.userpic}" width="80px" height="80px" class="rounded-circle"></td>
+                                        <td><button data-bs-toggle="modal" data-bs-target="#modal-userinfo" onclick="userDetails('${item.author._id}')" class="card-title btn btn-info">${item.author.username}</button></td>
+                                        <td><h4>4 stelle</h4></td>
+                                    </tr>
+                                    </table>
+                                    <p class="card-subtitle" style="float: right;">tags: ${item.tags.join(' ')}</p>
+                                    <p class="card-subtitle"><b>${item.title}</b></p>
+                                    <p class="card-text">${item.description}</p>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="#" class="btn btn-primary" onclick="attemptBooking('${item.id}')">Prenota</a>
+                                    <p class="card-subtitle" style="float: right;">Posti già prenotati: ${item.reservations.length}/${item.maxReservations}</p>
+                                </div>
+                        </div>`);
+                    }  
+                    // load announcements to map,
                     initMap(userpos, _json.announcementsList);
-                    
-                })
-                .catch( err => {
-                    console.log("Error occurred: " + err);
-                });
+                })})
+            .catch( err => {
+                console.log("Error occurred: " + err);
+            });
             }
 
             // map handling
