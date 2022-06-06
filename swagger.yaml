@@ -1,148 +1,711 @@
 swagger: '2.0'
 info:
-  version: '1.0'
+  version: '2.0'
   title: "BlaBlaFood"
   description: BlaBlaFood is a webapp where users can share posts within the community to offer meals, to cook together, to buy and take away, or to eat at cook's house.
   license:
     name: MIT
     url: https://github.com/apiaryio/polls-api/blob/master/LICENSE
-host: polls.apiblueprint.org
-basePath: /api/v1/
+host: blablafood.herokuapp.com
+
+basePath: /api/v2/
 schemes:
 - http
 consumes:
 - application/json
 produces:
 - application/json
+
 paths:
-  /users:
-    x-summary: Users Collection
-    get:
-      summary: Retrieve all users
-      responses:
-        200:
-          description: 'Successful response'
-        404:
-          description: 'No user found in database'
-
-    post:
-      summary: Create a new user
-      description: |
-        Allows to save a new user to database sending user's parameters
-      parameters:
-        - name: user
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/User'
-      responses:
-        201:
-          description: 'New user successfully saved!'
-          
-  /users/me:
-    get:
-      summary: Retrieve info about a specific user
-      responses:
-        200:
-          description: 'User retrieved correctly'
-        403:
-          description: 'Error user not logged in'
-            
-  /announcements:
-    x-summary: Announcements Collection
-    get:
-      summary: Retrieve all announcements
-      responses:
-        200:
-          description: 'Successful response'
-        404:
-          description: 'No announcement found in database'
-            
-    post:
-      summary: Create a new user
-      description: |
-        Allows to save a new user to database sending user's parameters
-      parameters:
-        - name: user
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/User'
-      responses:
-        201:
-          description: 'New user successfully saved!'
-  
-  /announcements/:id:
-    x-summary: Single Announcement
-    get:
-      summary: Retrieve a specific announcement
-      responses:
-        201:
-          description: 'Found announcement with id'
-
-        403:
-          description: 'Error retrieving announcement'
-            
-    post:
-      summary: Update specific announcement
-      description: |
-        Allows to either book an announcement or confirm a booking (if user is the cook):
-        - if the userId in headers (the user performing the operation) is the same as the announcement creator...
-          ... then the creator is trying to confirm a booking (must also include the user id to be accepted) 
-        - else...
-          ... a user (the one in loggedin) is trying to book an announcement
-
-      responses:
-        200:
-          description: 'New user successfully saved!'
-        201:
-          description: 'Booking done! Waiting for users approval...'
-        403:
-          description: 'Announcement is already full'
-
   /auth/login:
+    x-summary: Effettua il login di un utente
     post:
-      summary: Authenticate user
-      description: |
-        Checks sent password with the one in the database and, if equal,
-        signs a new jwt and sends it back in the response
+      description: >-
+        Controlla i campi email e password nel body e li confronta con quelli presenti nel database.
+        In particolare, recupera un oggetto utente con quell'indirizzo email e confronta gli hash
+        delle due password per verificarne l'uguaglianza. In caso positivo, viene ritornato un token
+        JWT contenente email, name, username e id dell'utente, messaggio e stato dell'operazione e 
+        username dell'utente. In caso contrario, restituisce un messaggio d'errore.
+      summary: Effettua il login di un utente alla webapp
       parameters:
-        - name: user
-          description: 'user'
+        - name: body
           in: body
-          schema:
-            $ref: '#/definitions/User'
           required: true
+          schema:
+            $ref: '#/definitions/LoginRequest'
       responses:
+        201:
+          description: Login effettuato con successo
+          schema:
+            $ref: '#/definitions/LoginResponse'
+          examples:
+            application/json:
+              success: true
+              message: 'Login successfull!'
+              token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJjQGJlY2llbnouaXQiLCJuYW1lIjoiYmUiLCJ1c2VybmFtZSI6ImJlY2llbnoiLCJpZCI6IjYyOTBhYWYyY2Q1OWVkOGEzNmViZWVkZSIsImlhdCI6MTY1NDIwNDE1MCwiZXhwIjoxNjU0MjkwNTUwfQ.QZHkiDB1n4rR_qt9TEdSIr5MBgx7i39MbwKD96cXhmY'
+              username: 'braggino'
         403:
-          description: 'Login failed: wrong password'
-        200:
-          description: 'Login successful'
+          description: Errore durante il login
+          schema:
+            $ref: '#/definitions/LoginResponse'
+          examples:
+            application/json:
+              success: true
+              message: 'Login failed: wrong password'
+              token: undefined
+              username: undefined
+              
+  /users:
+      x-summary: Si interfaccia con la collezione di Utenti nel database per aggiungerne, modificarne o recuperarne
+      post:
+        description: >-
+          Aggiunge un nuovo documento Utente al database nella collezione Utenti con i dati passati
+          via richiesta.
+        summary: Crea un utente nel database
+        parameters:
+          - name: body
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/NewUserRequest'
+    
+        responses:
+          201:
+            description: Nuovo utente salvato con successo!
+            schema:
+              $ref: '#/definitions/NewUserResponse'
+            examples:
+              application/json:
+                success: true
+                message: 'New user successfully saved'
+          403:
+            description: Errore provando a salvare il nuovo utente nel database.
+            schema:
+              $ref: '#/definitions/NewUserResponse'
+            examples:
+              application/json:
+                success: true
+                message: 'Error trying to save to database.'
+    
+      get:
+        description: >-
+          Recupera gli utenti dal database e li restituisce sotto forma di lista.
+        summary: Recupera la lista di utenti
+        responses:
+          201:
+            description: Trovati utenti nel database!
+            schema:
+              $ref: '#/definitions/UsersResponse'
+            examples:
+              application/json:
+                success: true
+                message: 'Found users in database'
+                usersList: [
+                  User, User, User
+                ]
+          403:
+            description: Errore provando a recuperare gli utenti dal database.
+            schema:
+              $ref: '#/definitions/UsersResponse'
+            examples:
+              application/json:
+                success: true
+                message: 'Error trying to retrieve users from database'
+                usersList: undefined
+          404:
+            description: Nessun utente trovato nel database.
+            schema:
+              $ref: '#/definitions/UsersResponse'
+            examples:
+              application/json:
+                success: true
+                message: 'No user found in database'
+                usersList: undefined
+  
+  ## === ME === ##
+  /users/me:
+    x-summary: Recupera informazioni sull'utente che sta navigando
+    get:
+      description: >-
+        Utilizza l'indirizzo email salvato nel token della richiesta per trovare l'oggetto utente dal database
+        e ritornarne le informazioni in risposta.
+      summary: Recupera informazioni sull'utente che sta navigando
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string
+      responses:
+        201:
+          description: Dati dell'utente recuperati con successo
+          schema:
+            $ref: '#/definitions/UserResponse'
+          examples:
+            application/json:
+              success: true
+              message: 'Found user with id {id}'
+              user: {
+                  _id: "6290aaf2cd59ed8a36ebeede",
+                  name: "be",
+                  surname: "cienz",
+                  username: "becienz",
+                  phone: "3475647364",
+                  birthday: "2010-10-09T22:00:00.000Z",
+                  home: "pozzuoli",
+                  email: "bc@becienz.it",
+                  password: "$2b$05$tPg.noShbW9wGP.HpiUBWesnib22IMaTripwqRzfemAxAVhowL6ya",
+                  userpic: "https://images.genius.com/6c4235331699eab95f9b9c8a17c65741.720x720x1.jpg",
+                  announcements: [],
+                  reviews: [],
+                  __v: 0,
+                  level: 330
+              }
+  
+        403:
+          description: Errore nel recupero dei dati dell'utente
+          schema:
+            $ref: '#/definitions/UserResponse'
+
+  ## === GET BY ID === ##
+  /users/{id}:
+    x-summary: Recupera i dati di uno specifico utente
+    get:
+      description: >-
+        Utilizzando l'id specificato nei parametri della richiesta, vengono recuperati i dati di uno 
+        specifico utente.
+      summary: Recupera informazioni sull'utente che sta navigando
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: number
+      responses:
+        201:
+          description: Dati dell'utente recuperati con successo
+          schema:
+            $ref: '#/definitions/UserResponse'
+          examples:
+            application/json:
+              success: true
+              message: 'Found user with id {id}'
+              user: {
+                  _id: "6290aaf2cd59ed8a36ebeede",
+                  name: "be",
+                  surname: "cienz",
+                  username: "becienz",
+                  phone: "3475647364",
+                  birthday: "2010-10-09T22:00:00.000Z",
+                  home: "pozzuoli",
+                  email: "bc@becienz.it",
+                  password: "$2b$05$tPg.noShbW9wGP.HpiUBWesnib22IMaTripwqRzfemAxAVhowL6ya",
+                  userpic: "https://images.genius.com/6c4235331699eab95f9b9c8a17c65741.720x720x1.jpg",
+                  announcements: [],
+                  reviews: [],
+                  __v: 0,
+                  level: 330
+              }
+        403:
+          description: Errore nel recupero dei dati dell'utente
+          schema:
+            $ref: '#/definitions/UserResponse'
+          examples:
+            application/json:
+              success: true
+              message: 'No user found in database'
+              user: undefined
+
+  ## === REVIEWS === ##
+  /users/{id}/reviews:
+    x-summary: Gestisce le recensioni di un utente
+    post:
+      description: >-
+        Interfaccia con il database per aggiungere una recensione ad un utente
+      summary: Aggiunge una recensione ad un utente
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: number
+      - name: body
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/ReviewRequest'
+        
+      responses:
+        201:
+          description: Recensione aggiunta con successo
+          schema:
+            $ref: '#/definitions/ReviewResponse'
+          examples:
+            application/json:
+              success: true
+              message: 'User review added'
+        403:
+          description: Errore durante l'aggiunta di una recensione
+          schema:
+            $ref: '#/definitions/ReviewResponse'
+          examples:
+            application/json:
+              success: false
+              message: 'Error adding user review'
+
+  ## === ANNOUNCEMENTS === ##
+  /announcements:
+    x-summary: Gestisce l'interfaccia con gli annunci sul database
+    post:
+      description: >-
+        Controlla che l'utente sia loggato. In caso positivo, crea un nuovo oggetto annuncio
+        con i dati passati nella richiesta e lo aggiunge al database alla collezione Announcement.
+        Utilizza forward geocoding (con Mapbox) per recuperare le coordinate dell'indirizzo specificato.
+      summary: Aggiunge un annuncio
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AnnouncementRequest'
+      responses:
+        201:
+          description: Annuncio aggiunto con successo
+          schema:
+            $ref: '#/definitions/AnnouncementPostResponse'
+          examples:
+            application/json:
+              success: true
+              message: 'New announcement successfully saved'
+        403:
+          description: Errore durante l'aggiunta di un annuncio
+          schema:
+            $ref: '#/definitions/AnnouncementPostResponse'
+          examples:
+            application/json:
+              success: false
+              message: 'Error trying to save announcement to database'
+    get:
+      description: >-
+        Recupera tutti gli annunci dal database. Controlla i parametri nella richiesta, in particolare
+        se sono stati applicati dei filtri. Recupera dal dataabse tutti gli annunci, li filtra e li 
+        restituisce in risposta come array di oggetti.
+      summary: Recupera tutti gli annunci dal database
+      parameters:
+        - name: filters
+          in: query
+          required: false
+          type: string
+      responses:
+        201:
+          description: Recuperati annunci dal database
+          schema:
+            $ref: '#/definitions/AnnouncementListResponse'
+          examples:
+            application/json:
+              success: true
+              message: 'Retrieved announcements from database'
+              announcementsList:  [
+                Announcement, Announcement
+              ]
+        403:
+          description: Errore nel recupero degli annunci dal database
+          schema:
+            $ref: '#/definitions/AnnouncementListResponse'
+          examples:
+            application/json:
+              success: false
+              message: 'Error adding user review'
+              announcementsList: undefined
+        404:
+          description: Nessun annuncio trovato nel database
+          schema:
+            $ref: '#/definitions/AnnouncementResponse'
+          examples:
+            application/json:
+              success: false
+              message: 'No announcements found'
+              announcementsList: undefined
+
+  /announcements/{id}:
+    x-summary: Recupera un annuncio dal suo id
+    post:
+      description: >-
+        Recupera un annuncio dal database basandosi sull'id preso dai parametri.
+      summary: Recupera un annuncio
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: number
+      responses:
+        201:
+          description: Annuncio trovato
+          examples:
+            application/json:
+              success: true
+              message: 'Found announcement with id {id}'
+              announcement: Announcement
+        403:
+          description: Errore nel recuperare l'annuncio
+          examples:
+            application/json:
+              success: false
+              message: 'Error retrieving announcement with id{id}'
+              announcement: undefined
+  
+  /announcements/{id}/book:
+    x-summary: Tenta di prenotare un annuncio
+    post:
+      description: >-
+        Controlla che l'utente sia loggato. In caso positivo, vengono presi dalla query l'id
+        dell'annuncio da prenotare e dal token l'id dell'utente che sta provando a prenotare.
+        Se ci sono ancora posti liberi in quell'annuncio, viene aggiornata la lista che contiene
+        gli utenti prenotati in attesa di conferma.
+      summary: Prenota un annuncio
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: number
+      responses:
+        201:
+          description: Prenotazione effettuata, in attesa dell'approvazione dell'utente
+          examples:
+            application/json:
+              success: true
+              message: 'Booking done! Waiting for users approval'
+        403:
+          description: Errore nel recupero dell'annuncio
+          examples:
+            application/json:
+              success: false
+              message: 'Error retrieving announcement with id {id}'
+  
+  /announcements/{id}/confirm:
+    x-summary: Conferma la prenotazione di un utente ad un annuncio
+    post:
+      description: >-
+        Controlla che l'utente sia loggato. In caso positivo, prende l'id dell'annuncio dalla query
+        e l'id dell'utente da confermare dal body. A quel punto, aggiorna l'annuncio spostando quell'utente
+        dalla lista di utenti in attesa di conferma alla lista di quelli prenotati.
+      summary: Conferma la prenotazione di un utente
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: number
+      - name: userToConfirmid
+        in: body
+        required: true
+        schema:
+          type: number
+      responses:
+        201:
+          description: Utente confermato con successo
+          examples:
+            application/json:
+              success: true
+              message: 'User ${id} confirmed for announcement'
+        403:
+          description: L'annuncio è gia al completo
+          examples:
+            application/json:
+              success: false
+              message: 'Announcement is already full!'
 
 definitions:
-  User:
-    title: User
+  # === LOGIN ===
+  LoginRequest:
+    title: Login Request
     type: object
     properties:
-      user:
-        type: string
-      surname:
-        type: string
-      username:
-        type: string
       email:
         type: string
       password:
         type: string
-      home:
+    required:
+      - email
+      - password
+    example:
+      email: andrea.bragante@studenti.unitn.it
+      password: braggino
+
+  LoginResponse:
+    title: Login
+    type: object
+    properties:
+      message:
         type: string
-      phonenumber:
+      success:
+        type: boolean
+      token: 
         type: string
-      birthday:
+      username:
         type: string
-  String:
-    title: string
-    type: string
-  Id:
-    title: id
-    type: string
+    required:
+      - success
+      - message
+      - token
+      - username
+    example:
+      success: false
+      message: 'Login failed: wrong password'
+      token: undefined
+      username: undefined
+
+# === USERS ===
+  NewUserRequest:
+    title: NewUser
+    type: object
+    properties:
+        name: 
+          type: string
+        surname:
+          type: string
+        phone:
+          type: string
+        username:
+          type: string
+        birthday: 
+          type: string
+        userpic: 
+          type: string
+        home:
+          type: string
+        email: 
+          type: string
+        password:
+          type: string 
+    required:
+      - name
+      - surname
+      - phone
+      - username
+      - birthday
+      - userpic
+      - home
+      - email
+      - password
+    example:
+      name: 'Andrea'
+      surname: 'Bragante'
+      phone: '3428855753'
+      username: 'braggino'
+      birthday: '31/10/2000'
+      userpic: ''
+      home: 'Trento'
+      email: 'andrea.bragante@studenti.unitn.it'
+      password: 'braggino'
+  
+  NewUserResponse:
+    title: NewUser
+    type: object
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
+    required:
+      - message
+      - success
+    example:
+      success: false
+      message: 'Error trying to save to database'
+
+  UsersRequest:
+    title: Users
+    type: object
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
+      token: 
+        type: string
+      username:
+        type: string
+    required:
+      - success
+      - message
+      - token
+      - username
+    example:
+      success: false
+      message: 'Login failed: wrong password'
+      token: undefined
+      username: undefined
+  
+  UsersResponse:
+    title: Users
+    type: object
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
+      usersList:
+        type: array
+        items:
+          type: object
+    required:
+      - success
+      - message
+    example:
+      success: true
+      message: 'Found users in database'
+      usersList: []
+  
+  UserResponse:
+    title: User
+    type: object
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
+      user:
+        type: object
+    required:
+      - success
+      - message
+    example:
+      success: true
+      message: 'Found user with id=id'
+      user: {}
+      
+  # === REVIEWS ===
+  ReviewRequest:
+    title: Review
+    type: object
+    properties:
+      title:
+        type: string
+      description:
+        type: string
+      announcementId:
+        type: number
+      poster:
+        type: string
+      stars:
+        type: number
+    required:
+      - title
+      - description
+      - poster
+      - stars
+    example:
+      application/json:
+        title: 'buono il manzo'
+        description: 'ottimo spezzatino!'
+        poster: 'braggino'
+        stars: 4
+
+  ReviewResponse:
+    title: Review
+    type: object
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
+    required:
+      - success
+      - message
+    example:
+      success: true
+      message: 'User review added'
+      
+  # === ANNOUNCEMENTS ===
+  AnnouncementRequest:
+    title: Announcement
+    type: object
+    properties:
+      title:
+        type: string
+      description:
+        type: string
+      address:
+        type: string
+      place:
+        type: string
+      date:
+        type: string
+      tags:
+        type: array
+        items:
+          type: string
+      price:
+        type: number
+      maxReservations:
+        type: number
+    required:
+      - title
+      - description
+      - address
+      - place
+      - date
+      - tags
+      - price
+      - maxReservations
+    example:
+      application/json:
+        title: 'Focaccia'
+        description: 'Focacciona con le olive'
+        address: 'via Taramelli 14'
+        place: 'Trento'
+        date: 15/10/2022
+        tags: ['vegano', 'pane']
+        price: 2
+        maxReservations: 3 
+  
+  AnnouncementPostResponse:
+    title: Announcement
+    type: object
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
+    required:
+      - success
+      - message
+    example:
+      success: true
+      message: 'New announcement successfully saved'
+
+  AnnouncementListResponse:
+    title: Announcement
+    type: object
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
+      announcementsList:
+        type: array
+        items:
+          type: object
+    required:
+      - success
+      - message
+      - announcementsList
+    example:
+      success: true
+      message: 'Retrieved announcements from database'
+
+  AnnouncementResponse:
+    title: Announcement
+    type: object
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
+      announcement:
+        type: object
+    required:
+      - success
+      - message
+      - announcement
+    example:
+      success: false
+      message: 'Error retrieving announcement with id {id}'
+      announcement: undefined
