@@ -41,7 +41,7 @@ describe('GET /api/v2/users/me', () => {
     var options = { expiresIn: 43200 }; // expires in 12 hours
 
     //token creation
-    /**     DAI UN OCCHIATA A QUESTA LOGICA [don't know if it ]
+    /**     DAI UN OCCHIATA A QUESTA LOGICA [don't know if it works]
      * 
      *      var token;
      * 
