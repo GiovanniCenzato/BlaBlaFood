@@ -22,14 +22,16 @@
 
                 // set content of login/logout button
                 if (sessionStorage.getItem('token') == null) {
-                    document.getElementById('profile_btn').setAttribute('href', 'login.html'); // TEMP
+                    document.getElementById('profile_btn').setAttribute('href', 'login.html');
                     document.getElementById('login_logout_btn').innerText = 'Login';
-                    document.getElementById('login_logout_btn').setAttribute('onclick', 'window.location.href = "login.html"')
+                    document.getElementById('login_logout_btn').setAttribute('onclick', 'window.location.href = "login.html"');
+                    document.getElementById('announcement_btn').setAttribute('href', 'login.html');
                     document.getElementById('login_logout_dropdown').innerText = 'Accedi';
                 } else {
-                    document.getElementById('profile_btn').setAttribute('href', 'profile.html'); // TEMP
+                    document.getElementById('profile_btn').setAttribute('href', 'profile.html');
                     document.getElementById('login_logout_btn').innerText = 'Logout';
-                    document.getElementById('login_logout_btn').setAttribute('onclick', 'logout()')
+                    document.getElementById('login_logout_btn').setAttribute('onclick', 'logout()');
+                    document.getElementById('announcement_btn').setAttribute('href', 'announcement.html');
                     document.getElementById('login_logout_dropdown').innerText = `Ciao, ${sessionStorage.getItem('username')}`;
                 }
             });
@@ -45,7 +47,7 @@
                             <a class="nav-link" href="index.html">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="announcement.html">Crea annuncio</a>
+                            <a class="nav-link" id="announcement_btn" href="announcement.html">Crea annuncio</a>
                           </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" id="login_logout_dropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Accesso</a>
@@ -331,7 +333,7 @@
                         old_user.description = document.getElementById('description').innerText;
                         sessionStorage.setItem('old_user', JSON.stringify(old_user));
                         
-                        // create inputs
+                        // create inputssetAttribut
                         console.log(old_user);
                         document.getElementById('name').innerHTML = `<input type="text" placeholder="${old_user.name}" id="name-edit" />`;
                         document.getElementById('surname').innerHTML = `<input type="text" placeholder="${old_user.surname}" id="surname-edit" />`;
@@ -399,86 +401,86 @@
                     }
                 }
 
-                /**
-                 * function to update announcements
-                 */
-                function editAnnouncement(id, _switch) {
-                    if (_switch) {
-                        // save current state user
-                        let old_ann = {};
+                // /**
+                //  * function to update announcements
+                //  */
+                // function editAnnouncement(id, _switch) {
+                //     if (_switch) {
+                //         // save current state user
+                //         let old_ann = {};
 
-                        old_ann.title = document.getElementById('title').innerText;
-                        old_ann.description = document.getElementById('description').innerText;
-                        old_ann.address = document.getElementById('address').innerText;
-                        old_ann.date = document.getElementById('date').innerText;
-                        old_ann.price = document.getElementById('price').innerText;
-                        sessionStorage.setItem('old_ann', JSON.stringify(old_ann));
+                //         old_ann.title = document.getElementById('title').innerText;
+                //         old_ann.description = document.getElementById('description').innerText;
+                //         old_ann.address = document.getElementById('address').innerText;
+                //         old_ann.date = document.getElementById('date').innerText;
+                //         old_ann.price = document.getElementById('price').innerText;
+                //         sessionStorage.setItem('old_ann', JSON.stringify(old_ann));
                         
-                        // create inputs
-                        console.log(old_user);
-                        document.getElementById('title').innerHTML = `<input type="text" placeholder="${old_ann.title}" id="${id}-title-edit" />`;
-                        document.getElementById('description').innerHTML = `<input type="text" placeholder="${old_ann.description}" id="${id}-description-edit" />`;
-                        document.getElementById('address').innerHTML = `<input type="address" placeholder="${old_ann.address}" id="${id}-address-edit" />`;
-                        document.getElementById('date').innerHTML = `<input type="date" placeholder="${old_ann.date}" id="${id}-date-edit" />`;
-                        document.getElementById('price').innerHTML = `<input type="number" placeholder="${old_ann.price}" id="${id}-price-edit" />`;
+                //         // create inputs
+                //         console.log(old_user);
+                //         document.getElementById('title').innerHTML = `<input type="text" placeholder="${old_ann.title}" id="${id}-title-edit" />`;
+                //         document.getElementById('description').innerHTML = `<input type="text" placeholder="${old_ann.description}" id="${id}-description-edit" />`;
+                //         document.getElementById('address').innerHTML = `<input type="address" placeholder="${old_ann.address}" id="${id}-address-edit" />`;
+                //         document.getElementById('date').innerHTML = `<input type="date" placeholder="${old_ann.date}" id="${id}-date-edit" />`;
+                //         document.getElementById('price').innerHTML = `<input type="number" placeholder="${old_ann.price}" id="${id}-price-edit" />`;
 
-                        // button to save
-                        document.getElementById(`edit-announcement-${id}`).setAttribute('value', 'Salva modifiche');
-                        document.getElementById(`edit-announcement-${id}`).setAttribute('onclick', 'editAnnouncement(false)');
+                //         // button to save
+                //         document.getElementById(`edit-announcement-${id}`).setAttribute('value', 'Salva modifiche');
+                //         document.getElementById(`edit-announcement-${id}`).setAttribute('onclick', 'editAnnouncement(false)');
 
-                    } else {
-                        // save edits, update model and close 
-                        let ann = {};
-                        ann.title = document.getElementById(`${id}-title-edit`).value=='' ? document.getElementById(`${id}-title-edit`).placeholder : document.getElementById(`${id}-title-edit`).value;
-                        ann.description = document.getElementById(`${id}-description-edit`).value=='' ? document.getElementById(`${id}-description-edit`).placeholder : document.getElementById(`${id}-description-edit`).value;
-                        ann.address = document.getElementById(`${id}-address-edit`).value=='' ? document.getElementById(`${id}-address-edit`).placeholder : document.getElementById(`${id}-address-edit`).value;
-                        ann.date = document.getElementById(`${id}-date-edit`).value=='' ? document.getElementById(`${id}-date-edit`).placeholder : document.getElementById(`${id}-date-edit`).value;
-                        ann.price = document.getElementById(`${id}-price-edit`).value=='' ? document.getElementById(`${id}-price-edit`).placeholder : document.getElementById(`${id}-price-edit`).value;
+                //     } else {
+                //         // save edits, update model and close 
+                //         let ann = {};
+                //         ann.title = document.getElementById(`${id}-title-edit`).value=='' ? document.getElementById(`${id}-title-edit`).placeholder : document.getElementById(`${id}-title-edit`).value;
+                //         ann.description = document.getElementById(`${id}-description-edit`).value=='' ? document.getElementById(`${id}-description-edit`).placeholder : document.getElementById(`${id}-description-edit`).value;
+                //         ann.address = document.getElementById(`${id}-address-edit`).value=='' ? document.getElementById(`${id}-address-edit`).placeholder : document.getElementById(`${id}-address-edit`).value;
+                //         ann.date = document.getElementById(`${id}-date-edit`).value=='' ? document.getElementById(`${id}-date-edit`).placeholder : document.getElementById(`${id}-date-edit`).value;
+                //         ann.price = document.getElementById(`${id}-price-edit`).value=='' ? document.getElementById(`${id}-price-edit`).placeholder : document.getElementById(`${id}-price-edit`).value;
 
-                        // send request to api
-                        fetch(`/api/v2/users/me`, {
-                            method: 'PUT',
-                            mode: 'cors',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'x-access-token': `${sessionStorage.getItem('token')}`
-                            },
-                            body: JSON.stringify({
-                                announcement
-                            })
-                        })
-                        .then(res => {if(!res.ok) {console.log('error!'); } return res.json(); })
-                        .then( _json => {
-                            // success! save the updated fields
-                            document.getElementById('name').innerHTML = `${user.name}`;
-                            document.getElementById('surname').innerHTML = `${user.surname}`;
-                            document.getElementById('username').innerHTML = `${user.username}`;
-                            document.getElementById('home').innerHTML = `${user.home}`;
-                            document.getElementById('birthday').innerHTML = `${user.birthday}`;
-                            document.getElementById('description').innerHTML = `${user.description}`;
+                //         // send request to api
+                //         fetch(`/api/v2/users/me`, {
+                //             method: 'PUT',
+                //             mode: 'cors',
+                //             headers: {
+                //                 'Content-Type': 'application/json',
+                //                 'x-access-token': `${sessionStorage.getItem('token')}`
+                //             },
+                //             body: JSON.stringify({
+                //                 announcement
+                //             })
+                //         })
+                //         .then(res => {if(!res.ok) {console.log('error!'); } return res.json(); })
+                //         .then( _json => {
+                //             // success! save the updated fields
+                //             document.getElementById('name').innerHTML = `${user.name}`;
+                //             document.getElementById('surname').innerHTML = `${user.surname}`;
+                //             document.getElementById('username').innerHTML = `${user.username}`;
+                //             document.getElementById('home').innerHTML = `${user.home}`;
+                //             document.getElementById('birthday').innerHTML = `${user.birthday}`;
+                //             document.getElementById('description').innerHTML = `${user.description}`;
                              
-                            // button to save
-                            document.getElementById('edit-profile').setAttribute('value', 'Modifica profilo');
-                            document.getElementById('edit-profile').setAttribute('onclick', 'editProfile(true)');
+                //             // button to save
+                //             document.getElementById('edit-profile').setAttribute('value', 'Modifica profilo');
+                //             document.getElementById('edit-profile').setAttribute('onclick', 'editProfile(true)');
 
-                        })
-                        .catch( err => {
-                            console.log("Error occurred: " + err);
-                            let old_user = JSON.parse(sessionStorage.getItem('old_user'));
-                            document.getElementById('name').innerHTML = `${old_user.name}`;
-                            document.getElementById('surname').innerHTML = `${old_user.surname}`;
-                            document.getElementById('username').innerHTML = `${old_user.username}`;
-                            document.getElementById('home').innerHTML = `${old_user.home}`;
-                            document.getElementById('birthday').innerHTML = `${old_user.birthday}`;
-                            document.getElementById('description').innerHTML = `${old_user.description}`;
+                //         })
+                //         .catch( err => {
+                //             console.log("Error occurred: " + err);
+                //             let old_user = JSON.parse(sessionStorage.getItem('old_user'));
+                //             document.getElementById('name').innerHTML = `${old_user.name}`;
+                //             document.getElementById('surname').innerHTML = `${old_user.surname}`;
+                //             document.getElementById('username').innerHTML = `${old_user.username}`;
+                //             document.getElementById('home').innerHTML = `${old_user.home}`;
+                //             document.getElementById('birthday').innerHTML = `${old_user.birthday}`;
+                //             document.getElementById('description').innerHTML = `${old_user.description}`;
                              
-                            // button to save
-                            document.getElementById('edit-profile').setAttribute('value', 'Modifica profilo');
-                            document.getElementById('edit-profile').setAttribute('onclick', 'editProfile(true)');
-                        });
-                    sessionStorage.removeItem('old_user');
-                    }
-                }
+                //             // button to save
+                //             document.getElementById('edit-profile').setAttribute('value', 'Modifica profilo');
+                //             document.getElementById('edit-profile').setAttribute('onclick', 'editProfile(true)');
+                //         });
+                //     sessionStorage.removeItem('old_user');
+                //     }
+                // }
             </script>
     </body>
 </html>

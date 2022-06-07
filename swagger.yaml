@@ -160,9 +160,52 @@ paths:
                   __v: 0,
                   level: 330
               }
-  
         403:
           description: Errore nel recupero dei dati dell'utente
+          schema:
+            $ref: '#/definitions/UserResponse'
+    put:
+      description: >-
+        Utilizza i dati nel form di modifica del profilo per aggiornare il profilo di un utente
+      summary: Aggiorna il profilo di un utente
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string
+        parameters:
+          - name: body
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/NewUserRequest'
+      responses:
+        201:
+          description: Dati dell'utente aggiornati con successo
+          schema:
+            $ref: '#/definitions/UserResponse'
+          examples:
+            application/json:
+              success: true
+              message: 'Found user with id {id}'
+              user: {
+                  _id: "6290aaf2cd59ed8a36ebeede",
+                  name: "be",
+                  surname: "cienz",
+                  username: "becienz",
+                  phone: "3475647364",
+                  birthday: "2010-10-09T22:00:00.000Z",
+                  home: "pozzuoli",
+                  email: "bc@becienz.it",
+                  password: "$2b$05$tPg.noShbW9wGP.HpiUBWesnib22IMaTripwqRzfemAxAVhowL6ya",
+                  userpic: "https://images.genius.com/6c4235331699eab95f9b9c8a17c65741.720x720x1.jpg",
+                  announcements: [],
+                  reviews: [],
+                  __v: 0,
+                  level: 330
+              }
+        403:
+          description: Errore nell'aggiornamento dei dati dell'utente
           schema:
             $ref: '#/definitions/UserResponse'
 

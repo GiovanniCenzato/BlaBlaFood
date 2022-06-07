@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user')
 const bcrypt = require('bcrypt');
-const Announcement = require('../models/announcement')
+const Announcement = require('../models/announcement');
+const tokenCheck = require('../api/tokenChecker');
 
 /**
  * Create a new user
@@ -50,13 +51,13 @@ const Announcement = require('../models/announcement')
 /**
  * Retrieves information about the user performing the operation ie. using the webapp
  */
-router.get('/me', async (req, res) => {
-    // // check for token 
-    // if (!req.token) {
-    //     return res.status(403).json({
-    //         message: 'Error, user not logged in'
-    //     });
-    // }
+router.get('/me', tokenCheck, async (req, res) => {
+    // check for token 
+    if (!req.token) {
+        return res.status(403).json({
+            message: 'Error, user not logged in'
+        });
+    }
 
     let status;
     let message;
@@ -190,7 +191,7 @@ router.get('/me', async (req, res) => {
 /**
  * Post a new review to user
  */
- router.post('/:id/reviews', async (req, res) => {
+ router.post('/:id/reviews', tokenCheck, async (req, res) => {
     // check for token 
     if (!req.token) {
         return res.status(403).json({
@@ -242,6 +243,49 @@ router.get('/me', async (req, res) => {
         message: message,
         success: (status==201) ? true : false
     });
+});
+
+router.put('/me', tokenCheck, async (req, res, next) => {
+    // check for token 
+    let status;
+
+    if (!req.loggedin) {
+        return res.status(403).json({
+            message: 'Error, user not logged in'
+        });
+    }
+    
+    try {
+        
+        // find user with email from request and update it
+        await User.findOneAndUpdate({
+            email: req.loggedin.email
+        }, {
+            name: req.body.name,
+            surname: req.body.surname,
+            username: req.body.username,
+            home: req.body.home,
+            birthday: req.body.birthday,
+            description: req.body.description
+        });
+
+        // send response
+        console.log(`Successfully updated user ${req.body.username}!`);
+        status = 201;
+        res.status().json({
+            message: `Successfully updated user ${req.body.username}!`,
+            success: (status==201) ? true : false
+        });
+
+    } catch (e) {
+        console.log(`Error updating user ${req.body.username}!`);
+        status = 403;
+        res.status(status).json({
+            message: `Error updating user ${req.body.username}!`,
+            success: (status==201) ? true : false
+        });
+    }
+
 });
 
 module.exports = router;

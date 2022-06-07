@@ -6,15 +6,15 @@
  const mongoose = require('mongoose');
  const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
  
-beforeAll( async () => { 
+ beforeAll(async () => {
      jest.setTimeout(50000);
-    app.locals.db = await mongoose.connect(process.env.MONGODB_URL);
-});
-// afterAll( async () => { 
-//     await mongoose.connection.close(true);
-// });
-
-
+     app.locals.db = await mongoose.connect(process.env.MONGODB_URL);
+ });
+//  afterAll( async () => { 
+//      await mongoose.connection.close(true);
+//  });
+ 
+ 
  describe('GET /api/v2/users/me', () => {
  
      let userSpy;
@@ -45,27 +45,15 @@ beforeAll( async () => {
      });
  
      //user non loggato cerca di accedere a pagina '/me'
-     test('GET /api/v2/user/me with no token should return 403', async () => {
+     test('GET /api/v2/user/me with no token should return 302', async () => {
          const response = await request(app).get('/api/v2/users/me');
          expect(response.statusCode).toBe(302);
      });
  
      //user con token invalido cerca di accedere a pagina '/me'
-     test('GET /api/v2/users/me should return 302 (403)', async () => {
-         var payload = {
-             id: '6290b3df39da9ee76ca18c95',
-             name: 'Andrea',
-             email: 'andrea.bragante@studenti.unitn.it',
-             username: 'braggino'
-         };
-         var options = {
-             expiresIn: 86400
-         }; // expires in 24 hours
-         var token = jwt.sign(payload, process.env.JWT_SECRET, options);
- 
+     test('GET /api/v2/users/me should return 302', async () => {
          const response = await request(app).get('/api/v2/users/me')
              .set('x-access-token', {});
-         //  expect(response.statusCode).toBe(403);
          expect(response.statusCode).toBe(302);
      });
  
@@ -79,11 +67,11 @@ beforeAll( async () => {
          };
          var options = {
              expiresIn: 86400
-         }; // expires in 24 hours
+         };
          var token = jwt.sign(payload, process.env.JWT_SECRET, options);
- 
+         
          const response = await request(app).get('/api/v2/users/me')
-             .set('x-access-token', token);
+         .set('x-access-token', token);
          expect(response.statusCode).toBe(201);
      });
  
@@ -102,8 +90,7 @@ beforeAll( async () => {
  
          var response = await request(app).get('/api/v2/users/me').set('x-access-token', token);
          var user = await response.body.user;
-         await expect(user).toBeDefined();
-         await expect(user.email).toBe('andrea.bragante@studenti.unitn.it');
+         expect(user.email).toBe('andrea.bragante@studenti.unitn.it');
      });
  
  });

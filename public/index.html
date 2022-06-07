@@ -48,12 +48,14 @@
                 if (sessionStorage.getItem('token') == null) {
                     document.getElementById('profile_btn').setAttribute('href', 'login.html');
                     document.getElementById('login_logout_btn').innerText = 'Login';
-                    document.getElementById('login_logout_btn').setAttribute('onclick', 'window.location.href = "login.html"')
+                    document.getElementById('login_logout_btn').setAttribute('onclick', 'window.location.href = "login.html"');
+                    document.getElementById('announcement_btn').setAttribute('href', 'login.html');
                     document.getElementById('login_logout_dropdown').innerText = 'Accedi';
                 } else {
                     document.getElementById('profile_btn').setAttribute('href', 'profile.html');
                     document.getElementById('login_logout_btn').innerText = 'Logout';
-                    document.getElementById('login_logout_btn').setAttribute('onclick', 'logout()')
+                    document.getElementById('login_logout_btn').setAttribute('onclick', 'logout()');
+                    document.getElementById('announcement_btn').setAttribute('href', 'announcement.html');
                     document.getElementById('login_logout_dropdown').innerText = `Ciao, ${sessionStorage.getItem('username')}`;
                 }
             });
@@ -69,7 +71,7 @@
                             <a class="nav-link" href="index.html">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="announcement.html">Crea annuncio</a>
+                            <a class="nav-link" id="announcement_btn" href="announcement.html">Crea annuncio</a>
                           </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" id="login_logout_dropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Accesso</a>
@@ -150,7 +152,6 @@
 
     <script>
             function postReview(userid){
-                console.log('asdfdg');
                 // take parameters
                 let title = document.getElementById('modal-review-title').value;
                 let description = document.getElementById('modal-review-description').value;
@@ -275,7 +276,7 @@
                                     <table cellpadding="8">
                                     <tr>
                                         <td><img src="${item.userpic===undefined ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Breezeicons-actions-22-im-user.svg/1200px-Breezeicons-actions-22-im-user.svg.png' : item.userpic}" width="80px" height="80px" class="rounded-circle"></td>
-                                        <td><button data-bs-toggle="modal" data-bs-target="#modal-userinfo" onclick="userDetails('${item.author._id}')" class="card-title btn btn-info">${item.author.username}</button></td>
+                                        <td><button data-bs-toggle="modal" data-bs-target="#modal-userinfo" ${sessionStorage.getItem('username')!=undefined ? `onclick="userDetails('${item.author._id}')"` : 'disabled'} class="card-title btn btn-info">${item.author.username}</button></td>
                                         <td><h4>4 stelle</h4></td>
                                     </tr>
                                     </table>

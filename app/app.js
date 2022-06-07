@@ -27,17 +27,8 @@ app.use('/api/v1/auth', auth);
 app.use('/api/v1/announcements', announcements);
 app.use('/api/v1/users', users);
 
-app.use('/api/v2/users/me', tokenChecker);
-app.use('/api/v2/users/me', users_v2);
-app.use('/api/v2/users/:id/reviews', tokenChecker)
-app.use('/api/v2/users/:id/reviews', users_v2)
-app.use('/api/v2/users', users_v2);
-
-app.use('/api/v2/announcements/:id/book', tokenChecker);
-app.use('/api/v2/announcements/:id/book', announcements_v2);
-app.use('/api/v2/announcements/:id/confirm', tokenChecker);
-app.use('/api/v2/announcements/:id/confirm', announcements_v2);
 app.use('/api/v2/announcements', announcements_v2);
+app.use('/api/v2/users', users_v2);
 app.use('/api/v2/auth', auth_v2);
 
 module.exports = app;
