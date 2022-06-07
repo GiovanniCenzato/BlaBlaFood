@@ -18,8 +18,8 @@ jobs:
     environment: production
 
     env:
-      JWT_SECRET: ${{ secrets.JWT_KEY }} # Must be set as a GitHub secret
-      MONGODB_URL: ${{ secrets.MONGODB_URI }} # Must be set as a GitHub secret
+      JWT_SECRET: ${{ secrets.JWT_SECRET }} # Must be set as a GitHub secret
+      MONGODB_URL: ${{ secrets.MONGODB_URL }} # Must be set as a GitHub secret
       MAPBOX_TOKEN: ${{ secrets.MAPBOX_TOKEN }}
 
     strategy:
