@@ -108,8 +108,8 @@ describe('Test /api/v2/announcements/:id/book', () => {
         var id = '32432423423';
 
         // test
-        return request(app).post('/api/v2/announcements/'+id+'/book', {})
-            .set('x-acces-token', token)
+        return request(app).post('/api/v2/announcements/'+id+'/book')
+            .set('x-access-token', token)
             .expect(403)
     });
     
@@ -126,7 +126,7 @@ describe('Test /api/v2/announcements/:id/book', () => {
         return request(app).post('/api/v2/announcements/'+id+'/book', {
 
         })
-            .set('x-acces-token', token)
+            .set('x-access-token', token)
             .expect(403)
     });
 
@@ -137,11 +137,11 @@ describe('Test /api/v2/announcements/:id/book', () => {
         var token = jwt.sign(payload, process.env.JWT_SECRET, options);
         
         // id
-        var id = '629bd3e2e7395120f978963e'; // in db, not full
+        var id = '629fa1ed035b8c4a27d066cf'; // in db, not full
 
         // test
         return request(app).post('/api/v2/announcements/'+id+'/book')
-            .set('x-acces-token', token)
+            .set('x-access-token', token)
             .expect(201)
     });
 });
@@ -159,8 +159,8 @@ describe('Test /api/v2/announcements/:id/confirm', () => {
 
         // test
         return request(app).post('/api/v2/announcements/'+id+'/confirm')
-            .set('x-acces-token', token)
-            .expect(404)
+            .set('x-access-token', token)
+            .expect(403)
     });
 
     test('POST /api/v2/announcements/:id/confirm should return 403 if userToConfirmId in parameters is malformed', async () => {
@@ -179,7 +179,7 @@ describe('Test /api/v2/announcements/:id/confirm', () => {
                 userToConfirmId: userToConfirmId
             }
         })
-            .set('x-acces-token', token)
+            .set('x-access-token', token)
             .expect(403)
     });
 
@@ -199,7 +199,7 @@ describe('Test /api/v2/announcements/:id/confirm', () => {
                 userToConfirmId: userToConfirmId
             }
         })
-            .set('x-acces-token', token)
+            .set('x-access-token', token)
             .expect(403)
     });
 
@@ -210,7 +210,7 @@ describe('Test /api/v2/announcements/:id/confirm', () => {
         var token = jwt.sign(payload, process.env.JWT_SECRET, options);
         
         // id
-        var id = '6297c927e8be3fff38b9ed49'; // in db, not full
+        var id = '629fa1ed035b8c4a27d066cf'; // in db, not full
         var userToConfirmId = '6290aaf2cd59ed8a36ebeede';
 
         // test
@@ -219,7 +219,7 @@ describe('Test /api/v2/announcements/:id/confirm', () => {
                 userToConfirmId: userToConfirmId
             }
         })
-        .set('x-acces-token', token)
+        .set('x-access-token', token)
         .expect(201)
     });
 });
