@@ -4,7 +4,7 @@
   "description": "A webapp to share food and moments",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "NODE=test jest",
     "test_local": "jest --setupFiles dotenv/config",
     "start": "node -r dotenv/config index.js",
     "start_local": "echo use: $ npm run dev",

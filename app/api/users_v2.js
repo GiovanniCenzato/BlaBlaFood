@@ -3,7 +3,6 @@ const router = express.Router();
 const User = require('../models/user')
 const bcrypt = require('bcrypt');
 const Announcement = require('../models/announcement')
-const tokenCheck = require('./tokenChecker');
 
 /**
  * Create a new user
@@ -51,13 +50,13 @@ const tokenCheck = require('./tokenChecker');
 /**
  * Retrieves information about the user performing the operation ie. using the webapp
  */
-router.get('/me', tokenCheck, async (req, res, next) => {
-    // check for token 
-    if (!req.token) {
-        return res.status(403).json({
-            message: 'Error, user not logged in'
-        });
-    }
+router.get('/me', async (req, res) => {
+    // // check for token 
+    // if (!req.token) {
+    //     return res.status(403).json({
+    //         message: 'Error, user not logged in'
+    //     });
+    // }
 
     let status;
     let message;
@@ -117,7 +116,7 @@ router.get('/me', tokenCheck, async (req, res, next) => {
             // set response
             message = `No user found in database!`;
             status = 404;
-            console.log(mesasge);
+            console.log(message);
 
         } else {
             usersList = users.map( (user) => {
@@ -133,7 +132,7 @@ router.get('/me', tokenCheck, async (req, res, next) => {
             // set response
             message = `Found ${usersList.length} users in database!`;
             status = 201;
-            console.log(mesasge);
+            console.log(message);
         }
 
     } catch (e) {
@@ -191,7 +190,7 @@ router.get('/me', tokenCheck, async (req, res, next) => {
 /**
  * Post a new review to user
  */
- router.post('/:id/reviews', tokenCheck, async (req, res, next) => {
+ router.post('/:id/reviews', async (req, res) => {
     // check for token 
     if (!req.token) {
         return res.status(403).json({

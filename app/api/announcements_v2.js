@@ -9,13 +9,13 @@ const tokenCheck = require('./tokenChecker');
 /**
  * Create a new announcement 
  */
-router.post('', tokenCheck, async (req, res, next) => {
+router.post('', async (req, res) => {
     // check for token 
-    if (!req.token) {
-        return res.status(403).json({
-            message: 'Error, user not logged in'
-        });
-    }
+    // if (!req.token) {
+    //     return res.status(403).json({
+    //         message: 'Error, user not logged in'
+    //     });
+    // }
 
     let message;
     let status;
@@ -206,13 +206,13 @@ router.get('/:id', async (req, res) => {
 /**
  * Attempt to book one specific announcement
 */
-router.post('/:id/book', tokenCheck, async (req, res, next) => {
+router.post('/:id/book', async (req, res) => {
     // check for token 
-    if (!req.token) {
-        return res.status(403).json({
-            message: 'Error, user not logged in'
-        });
-    }
+    // if (!req.token) {
+    //     return res.status(403).json({
+    //         message: 'Error, user not logged in'
+    //     });
+    // }
 
     let message;
     let status;
@@ -255,13 +255,13 @@ router.post('/:id/book', tokenCheck, async (req, res, next) => {
     });
 });
 
-router.post('/:id/confirm', tokenCheck, async (req, res, next) => {
-    // check for token 
-    if (!req.token) {
-        return res.status(403).json({
-            message: 'Error, user not logged in'
-        });
-    }
+router.post('/:id/confirm', async (req, res) => {
+    // // check for token 
+    // if (!req.token) {
+    //     return res.status(403).json({
+    //         message: 'Error, user not logged in'
+    //     });
+    // }
 
     let message;
     let status;
