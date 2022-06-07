@@ -190,7 +190,7 @@ describe('Test /api/v2/announcements/:id/confirm', () => {
         var token = jwt.sign(payload, process.env.JWT_SECRET, options);
         
         // id
-        var id = '6297ca580adab18f5f35ac3f'; // in db, full
+        var id = '6297ca580adab18f5f35ac3f'; // in db, full _C
         var userToConfirmId = 'sadfgh';
 
         // test
