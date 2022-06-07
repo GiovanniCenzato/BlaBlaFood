@@ -7,14 +7,16 @@
  const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
  
 beforeAll( async () => { 
-     jest.setTimeout(50000);
+    jest.setTimeout(50000);
     app.locals.db = await mongoose.connect(process.env.MONGODB_URL);
 });
-// afterAll( async () => { 
-//     await mongoose.connection.close(true);
-// });
+
+afterAll( async () => { 
+    await mongoose.connection.close(true);
+});
 
 
+ // /api/v2/users/me
  describe('GET /api/v2/users/me', () => {
  
      let userSpy;
@@ -44,62 +46,43 @@ beforeAll( async () => {
          userSpy.mockRestore();
      });
  
-     //user non loggato cerca di accedere a pagina '/me'
      test('GET /api/v2/user/me with no token should return 403', async () => {
          const response = await request(app).get('/api/v2/users/me');
          expect(response.statusCode).toBe(302);
      });
  
-     //user con token invalido cerca di accedere a pagina '/me'
      test('GET /api/v2/users/me should return 302 (403)', async () => {
-         var payload = {
-             id: '6290b3df39da9ee76ca18c95',
-             name: 'Andrea',
-             email: 'andrea.bragante@studenti.unitn.it',
-             username: 'braggino'
-         };
-         var options = {
-             expiresIn: 86400
-         }; // expires in 24 hours
+         //token
+         var payload = {id: '6290b3df39da9ee76ca18c95', name: 'Andrea', email: 'andrea.bragante@studenti.unitn.it', username: 'braggino'};
+         var options = { expiresIn: 86400 }; // expires in 24 hours
          var token = jwt.sign(payload, process.env.JWT_SECRET, options);
- 
+         
+        //test
          const response = await request(app).get('/api/v2/users/me')
              .set('x-access-token', {});
          //  expect(response.statusCode).toBe(403);
          expect(response.statusCode).toBe(302);
      });
  
-     //user con token valido cerca di accedere a pagina '/me'
      test('GET /api/v2/users/me should return 201', async () => {
-         var payload = {
-             id: '6290b3df39da9ee76ca18c95',
-             name: 'Andrea',
-             email: 'andrea.bragante@studenti.unitn.it',
-             username: 'braggino'
-         };
-         var options = {
-             expiresIn: 86400
-         }; // expires in 24 hours
-         var token = jwt.sign(payload, process.env.JWT_SECRET, options);
+        //token
+        var payload = {id: '6290b3df39da9ee76ca18c95', name: 'Andrea', email: 'andrea.bragante@studenti.unitn.it', username: 'braggino'};
+        var options = {expiresIn: 86400}; // expires in 24 hours
+        var token = jwt.sign(payload, process.env.JWT_SECRET, options);
  
-         const response = await request(app).get('/api/v2/users/me')
-             .set('x-access-token', token);
-         expect(response.statusCode).toBe(201);
+        //test
+        const response = await request(app).get('/api/v2/users/me')
+            .set('x-access-token', token);
+        expect(response.statusCode).toBe(201);
      });
  
-     //user con token valido cerca di accedere a pagina '/me' e leggere info
-     test('GET /api/v2/users/me should return user information', async () => {
-         var payload = {
-             id: '6290b3df39da9ee76ca18c95',
-             name: 'Andrea',
-             email: 'andrea.bragante@studenti.unitn.it',
-             username: 'braggino'
-         };
-         var options = {
-             expiresIn: 86400
-         }; // expires in 24 hours
-         var token = jwt.sign(payload, process.env.JWT_SECRET, options);
- 
+    test('GET /api/v2/users/me should return user information', async () => {
+        //token 
+        var payload = {id: '6290b3df39da9ee76ca18c95', name: 'Andrea', email: 'andrea.bragante@studenti.unitn.it', username: 'braggino'};
+        var options = {expiresIn: 86400}; // expires in 24 hours
+        var token = jwt.sign(payload, process.env.JWT_SECRET, options);
+        
+        //test
          var response = await request(app).get('/api/v2/users/me').set('x-access-token', token);
          var user = await response.body.user;
          await expect(user).toBeDefined();
@@ -108,7 +91,7 @@ beforeAll( async () => {
  
  });
  
- 
+ // /api/v2/users/:id
  describe('GET /api/v2/users/:id', () => {
  
      let userSpy;
@@ -131,19 +114,13 @@ beforeAll( async () => {
      });
  
      test('GET /api/v2/users/:id should respond with json', async () => {
-         var payload = {
-             id: '6290b3df39da9ee76ca18c95',
-             name: 'Andrea',
-             email: 'andrea.bragante@studenti.unitn.it',
-             username: 'braggino'
-         };
-         var options = {
-             expiresIn: 86400
-         }; // expires in 24 hours
-         var token = jwt.sign(payload, process.env.JWT_SECRET, options);
+        //token 
+        var payload = {id: '6290b3df39da9ee76ca18c95', name: 'Andrea', email: 'andrea.bragante@studenti.unitn.it', username: 'braggino'};
+        var options = {expiresIn: 86400}; // expires in 24 hours
+        var token = jwt.sign(payload, process.env.JWT_SECRET, options);
  
- 
-         return request(app)
+        //test
+        return request(app)
              .get('/api/v2/users/6290b3df39da9ee76ca18c95')
              .set('x-access-token', token)
              .expect('Content-Type', /json/)
@@ -160,12 +137,11 @@ beforeAll( async () => {
  
  
  
- 
+ // /api/v2/users
  describe('GET /api/v2/users', () => {
  
      let userSpy;
-     // Moking User.find method that retrives all users
- 
+
      beforeAll(() => {
          const User = require('../models/user');
          userSpy = jest.spyOn(User, 'find').mockImplementation((criterias) => {
