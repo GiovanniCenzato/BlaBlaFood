@@ -173,12 +173,11 @@ paths:
           in: header
           required: true
           type: string
-        parameters:
-          - name: body
-            in: body
-            required: true
-            schema:
-              $ref: '#/definitions/NewUserRequest'
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/NewUserRequest'
       responses:
         201:
           description: Dati dell'utente aggiornati con successo
