@@ -46,12 +46,12 @@ afterAll( async () => {
          userSpy.mockRestore();
      });
  
-     test('GET /api/v2/user/me with no token should return 403', async () => {
+     test('GET /api/v2/user/me with no token should return 302', async () => {
          const response = await request(app).get('/api/v2/users/me');
          expect(response.statusCode).toBe(302);
      });
  
-     test('GET /api/v2/users/me should return 302 (403)', async () => {
+     test('GET /api/v2/users/me should return 302', async () => {
          //token
          var payload = {id: '6290b3df39da9ee76ca18c95', name: 'Andrea', email: 'andrea.bragante@studenti.unitn.it', username: 'braggino'};
          var options = { expiresIn: 86400 }; // expires in 24 hours
